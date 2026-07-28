@@ -217,7 +217,7 @@ function renderAll(){
   const fd=document.getElementById('f-drafter').value;
   const fs=document.getElementById('f-status').value;
   const filteredJobs=jobs.filter(j=>(fd?j.drafter===fd:true)&&(fs?j.status===fs:true));
-  const allDrafters=fd?[fd]:[...new Set([...jobs.map(j=>j.drafter),...tasks.map(t=>{const j=jobs.find(x=>x.id===t.jobId);return j?j.drafter:null;})].filter(Boolean))].sort();
+  const allDrafters=fd?[fd]:drafters.slice().sort();
 
   renderKPI(filteredJobs,allDrafters);
   renderCards(allDrafters,filteredJobs);
