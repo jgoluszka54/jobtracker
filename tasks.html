@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JobTrack — Tasks</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f2;color:#1a1a18;min-height:100vh;font-size:15px}
+header{background:#fff;border-bottom:1px solid #e0dfd8;padding:0.85rem 1.5rem;display:flex;align-items:center;gap:1.5rem;position:sticky;top:0;z-index:10;flex-wrap:wrap}
+.logo{font-size:19px;font-weight:700;letter-spacing:-0.4px;white-space:nowrap;margin-right:0.5rem}
+.logo span{color:#185FA5}
+nav{display:flex;gap:2px;flex:1;flex-wrap:wrap}
+.nav-a{padding:6px 14px;border-radius:6px;font-size:14px;text-decoration:none;color:#6b6a65;font-weight:500;transition:all 0.1s;white-space:nowrap}
+.nav-a:hover{background:#f0efe8;color:#1a1a18}
+.nav-a.active{background:#E6F1FB;color:#0C447C}
+main{padding:1.25rem 1.5rem;max-width:1400px}
+.toolbar{display:flex;gap:8px;margin-bottom:1rem;align-items:center;flex-wrap:wrap}
+.toolbar input,.toolbar select{font-size:14px;height:36px;padding:0 10px;border:1px solid #c8c7c0;border-radius:6px;background:#fff;color:#1a1a18;outline:none}
+.toolbar input{min-width:200px;flex:1}
+.toolbar input:focus,.toolbar select:focus{border-color:#185FA5;box-shadow:0 0 0 3px rgba(24,95,165,0.12)}
+.btn{height:36px;padding:0 14px;border-radius:6px;border:1px solid #c8c7c0;background:#fff;color:#1a1a18;font-size:14px;cursor:pointer;white-space:nowrap;transition:background 0.12s}
+.btn:hover{background:#f0efe8}
+.btn.primary{background:#185FA5;color:#fff;border-color:#185FA5;font-weight:500}
+.btn.primary:hover{background:#0C447C}
+.btn.sm{height:28px;padding:0 10px;font-size:12px}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;font-weight:500;white-space:nowrap}
+.b-active{background:#E6F1FB;color:#0C447C}
+.b-review{background:#FAEEDA;color:#633806}
+.b-complete{background:#EAF3DE;color:#27500A}
+.b-onhold{background:#F1EFE8;color:#444441}
+.b-cancelled{background:#FCEBEB;color:#791F1F}
+.t-todo{background:#F1EFE8;color:#444441}
+.t-inprog{background:#E6F1FB;color:#0C447C}
+.t-done{background:#EAF3DE;color:#27500A}
+.t-blocked{background:#FCEBEB;color:#791F1F}
+.due-ok{color:#6b6a65}
+.due-soon{color:#854F0B;font-weight:500}
+.due-over{color:#A32D2D;font-weight:500}
+.icon-btn{background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:4px;color:#6b6a65;font-size:15px;line-height:1;transition:background 0.1s}
+.icon-btn:hover{background:#f0efe8;color:#1a1a18}
+
+/* Job group card */
+.job-group{background:#fff;border:1px solid #e0dfd8;border-radius:12px;margin-bottom:14px;overflow:hidden}
+.job-group-header{display:flex;align-items:center;gap:12px;padding:0.9rem 1.1rem;cursor:pointer;user-select:none;border-bottom:1px solid #f0efe8;transition:background 0.1s}
+.job-group-header:hover{background:#fafaf8}
+.job-group-header.collapsed{border-bottom:none}
+.jg-no{font-weight:700;font-size:15px;white-space:nowrap}
+.jg-client{font-size:14px;color:#1a1a18;font-weight:500}
+.jg-drafter{font-size:13px;color:#6b6a65}
+.jg-spacer{flex:1}
+.jg-counts{font-size:12px;color:#6b6a65;white-space:nowrap}
+.jg-chevron{font-size:12px;color:#6b6a65;transition:transform 0.2s}
+.jg-chevron.open{transform:rotate(180deg)}
+.add-task-row{display:flex;align-items:center;gap:8px;padding:0.65rem 1.1rem;border-top:1px solid #f5f5f2;background:#fafaf8}
+.add-task-row input{flex:1;font-size:13px;height:30px;padding:0 9px;border:1px solid #c8c7c0;border-radius:6px;outline:none;background:#fff}
+.add-task-row input:focus{border-color:#185FA5;box-shadow:0 0 0 2px rgba(24,95,165,0.1)}
+
+/* Task rows */
+.task-row{display:flex;align-items:center;gap:10px;padding:8px 1.1rem;border-bottom:1px solid #f5f5f2;font-size:14px;transition:background 0.1s}
+.task-row:last-of-type{border-bottom:none}
+.task-row:hover{background:#fafaf8}
+.task-cb{width:16px;height:16px;border-radius:4px;border:1.5px solid #c8c7c0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s}
+.task-cb.checked{background:#185FA5;border-color:#185FA5}
+.task-cb.checked::after{content:'✓';color:#fff;font-size:11px;font-weight:700}
+.task-name{flex:1;min-width:0}
+.task-name.done-text{text-decoration:line-through;color:#aaa}
+.task-due{font-size:12px;white-space:nowrap}
+.task-assignee{font-size:12px;color:#6b6a65;white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis}
+.task-priority{font-size:11px;padding:1px 6px;border-radius:3px;white-space:nowrap;font-weight:500}
+.p-high{background:#FAEEDA;color:#633806}
+.p-urgent{background:#FCEBEB;color:#791F1F}
+.p-low{background:#F1EFE8;color:#444441}
+.p-normal{display:none}
+.empty{text-align:center;padding:2rem;color:#6b6a65;font-size:14px}
+.no-tasks{color:#aaa;font-size:13px;padding:0.75rem 1.1rem;font-style:italic}
+
+/* Modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100;align-items:center;justify-content:center;padding:1rem}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:14px;padding:1.75rem;width:520px;max-width:100%;border:1px solid #e0dfd8;max-height:90vh;overflow-y:auto}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.modal-hdr h2{font-size:18px;font-weight:600}
+.close-btn{background:none;border:none;cursor:pointer;font-size:20px;color:#6b6a65;padding:2px 6px;border-radius:4px}
+.close-btn:hover{background:#f0efe8}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:13px;color:#6b6a65;margin-bottom:5px;font-weight:500}
+.field input,.field select,.field textarea{width:100%;padding:8px 11px;border:1px solid #c8c7c0;border-radius:7px;font-size:14px;background:#fff;color:#1a1a18;outline:none;font-family:inherit}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#185FA5;box-shadow:0 0 0 3px rgba(24,95,165,0.12)}
+.field textarea{height:68px;resize:vertical;line-height:1.5}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:1.5rem;padding-top:1rem;border-top:1px solid #e0dfd8}
+@media(max-width:600px){.row2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Job<span>Track</span></div>
+  <nav>
+    <a href="index.html" class="nav-a">Projects</a>
+    <a href="tasks.html" class="nav-a active">Tasks</a>
+    <a href="calendar.html" class="nav-a">Calendar</a>
+    <a href="dashboard.html" class="nav-a">Dashboard</a>
+  </nav>
+</header>
+
+<main>
+  <div class="toolbar">
+    <input type="text" id="search" placeholder="Search tasks, projects, clients…">
+    <select id="f-job"><option value="">All projects</option></select>
+    <select id="f-status">
+      <option value="">All task statuses</option>
+      <option value="To do">To do</option>
+      <option value="In progress">In progress</option>
+      <option value="Done">Done</option>
+      <option value="Blocked">Blocked</option>
+    </select>
+    <select id="f-drafter"><option value="">All drafters</option></select>
+    <button class="btn primary" onclick="openTaskModal()">+ Add task</button>
+  </div>
+  <div id="task-list"></div>
+</main>
+
+<!-- Task modal -->
+<div class="modal-bg" id="modal-bg" onclick="bgClose(event,'modal-bg')">
+  <div class="modal">
+    <div class="modal-hdr"><h2 id="modal-title">Add task</h2><button class="close-btn" onclick="closeModal()">✕</button></div>
+    <div class="field"><label>Project *</label><select id="t-jobId"><option value="">Select project…</option></select></div>
+    <div class="field"><label>Task name *</label><input id="t-name" placeholder="What needs to be done?"></div>
+    <div class="field"><label>Description</label><textarea id="t-desc" placeholder="Additional details…"></textarea></div>
+    <div class="row2">
+      <div class="field"><label>Status</label>
+        <select id="t-status"><option>To do</option><option>In progress</option><option>Done</option><option>Blocked</option></select>
+      </div>
+      <div class="field"><label>Priority</label>
+        <select id="t-priority"><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option><option value="low">Low</option></select>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Assigned to</label><select id="t-assignee"><option value="">— Unassigned —</option></select></div>
+      <div class="field"><label>Due date</label><input type="date" id="t-due"></div>
+    </div>
+    <div class="field"><label>Notes</label><textarea id="t-notes" placeholder="Optional notes…"></textarea></div>
+    <div class="modal-btns">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn primary" onclick="saveTask()">Save task</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SC={Active:'b-active','In review':'b-review',Complete:'b-complete','On hold':'b-onhold',Cancelled:'b-cancelled'};
+const TC={'To do':'t-todo','In progress':'t-inprog','Done':'t-done','Blocked':'t-blocked'};
+const PL={high:'p-high',urgent:'p-urgent',low:'p-low',normal:'p-normal'};
+const PRI={high:'🔴',urgent:'🚨',low:'⬇️',normal:''};
+
+let jobs=JSON.parse(localStorage.getItem('jt_jobs')||'[]');
+let drafters=JSON.parse(localStorage.getItem('jt_drafters')||'[]');
+let tasks=JSON.parse(localStorage.getItem('jt_tasks')||'[]');
+let editTaskId=null;
+let collapsed={};
+
+function persist(){localStorage.setItem('jt_tasks',JSON.stringify(tasks));}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function daysDiff(d){if(!d)return null;const t=new Date(d+'T00:00:00'),n=new Date();n.setHours(0,0,0,0);return Math.round((t-n)/86400000);}
+function fmtDate(d){if(!d)return'';const[y,m,day]=d.split('-');return`${m}/${day}/${y}`;}
+function dueCls(d,s){if(s==='Done')return'due-ok';const n=daysDiff(d);if(n===null)return'due-ok';return n<0?'due-over':n<=7?'due-soon':'due-ok';}
+
+// check for ?job= param to auto-filter
+const urlParams=new URLSearchParams(window.location.search);
+const initJobFilter=urlParams.get('job')||'';
+
+function populateSelects(){
+  const fj=document.getElementById('f-job');
+  fj.innerHTML='<option value="">All projects</option>'+jobs.map(j=>`<option value="${j.id}">${j.jobNo} — ${j.client}</option>`).join('');
+  if(initJobFilter)fj.value=initJobFilter;
+
+  const fd=document.getElementById('f-drafter');
+  fd.innerHTML='<option value="">All drafters</option>'+drafters.sort().map(d=>`<option>${d}</option>`).join('');
+
+  const tj=document.getElementById('t-jobId');
+  tj.innerHTML='<option value="">Select project…</option>'+jobs.map(j=>`<option value="${j.id}">${j.jobNo} — ${j.client}</option>`).join('');
+
+  const ta=document.getElementById('t-assignee');
+  ta.innerHTML='<option value="">— Unassigned —</option>'+drafters.sort().map(d=>`<option>${d}</option>`).join('');
+}
+
+function getFiltered(){
+  const q=document.getElementById('search').value.toLowerCase();
+  const fj=document.getElementById('f-job').value;
+  const fs=document.getElementById('f-status').value;
+  const fd=document.getElementById('f-drafter').value;
+  return tasks.filter(t=>{
+    if(fj&&t.jobId!==fj)return false;
+    if(fs&&t.status!==fs)return false;
+    if(fd&&t.assignee!==fd)return false;
+    if(q){const job=jobs.find(j=>j.id===t.jobId)||{};
+      if(![t.name,t.desc,t.notes,job.jobNo,job.client,job.description].join(' ').toLowerCase().includes(q))return false;}
+    return true;
+  });
+}
+
+function render(){
+  const filtered=getFiltered();
+  const fj=document.getElementById('f-job').value;
+  const container=document.getElementById('task-list');
+
+  // group by job
+  let groupJobs=fj?jobs.filter(j=>j.id===fj):jobs;
+  // only show jobs that have tasks matching filter (or all jobs if searching)
+  const jobsWithTasks=groupJobs.filter(j=>filtered.some(t=>t.jobId===j.id));
+
+  if(!jobsWithTasks.length){
+    container.innerHTML=`<div class="empty">${tasks.length?'No tasks match your filters.':'No tasks yet. Add a task from any project.'}</div>`;return;
+  }
+
+  container.innerHTML=jobsWithTasks.map(j=>{
+    const jTasks=filtered.filter(t=>t.jobId===j.id);
+    const open=jTasks.filter(t=>t.status!=='Done').length;
+    const done=jTasks.filter(t=>t.status==='Done').length;
+    const isCollapsed=!!collapsed[j.id];
+    return`<div class="job-group" id="jg-${j.id}">
+      <div class="job-group-header ${isCollapsed?'collapsed':''}" onclick="toggleGroup('${j.id}')">
+        <span class="jg-no">${j.jobNo}</span>
+        <span class="jg-client">${j.client}</span>
+        <span class="badge ${SC[j.status]||''}">${j.status}</span>
+        ${j.drafter?`<span class="jg-drafter">${j.drafter}</span>`:''}
+        <span class="jg-spacer"></span>
+        <span class="jg-counts">${open} open · ${done} done</span>
+        <span class="jg-chevron ${isCollapsed?'':'open'}">▼</span>
+      </div>
+      ${isCollapsed?'':renderTaskRows(jTasks,j)}
+    </div>`;
+  }).join('');
+}
+
+function renderTaskRows(jTasks,j){
+  const sorted=jTasks.slice().sort((a,b)=>{
+    const order={'Blocked':0,'In progress':1,'To do':2,'Done':3};
+    if(order[a.status]!==order[b.status])return order[a.status]-order[b.status];
+    if(a.due&&b.due)return a.due.localeCompare(b.due);
+    if(a.due)return-1;if(b.due)return 1;
+    return 0;
+  });
+  const rows=sorted.map(t=>{
+    const n=daysDiff(t.due);
+    const dc=dueCls(t.due,t.status);
+    const dueStr=t.due?(n<0?`${fmtDate(t.due)} (${Math.abs(n)}d over)`:n===0?`${fmtDate(t.due)} (today)`:n<=7?`${fmtDate(t.due)} (${n}d)`:fmtDate(t.due)):'';
+    const isDone=t.status==='Done';
+    return`<div class="task-row">
+      <div class="task-cb ${isDone?'checked':''}" onclick="toggleDone('${t.id}')"></div>
+      <div class="task-name ${isDone?'done-text':''}" title="${(t.desc||'').replace(/"/g,'&quot;')}">${t.name}</div>
+      ${t.priority&&t.priority!=='normal'?`<span class="task-priority ${PL[t.priority]||''}">${t.priority}</span>`:''}
+      <span class="badge ${TC[t.status]||''}">${t.status}</span>
+      ${t.assignee?`<span class="task-assignee">${t.assignee}</span>`:''}
+      <span class="task-due ${dc}">${dueStr}</span>
+      <button class="icon-btn" onclick="openTaskModal('${t.id}')" title="Edit">✏️</button>
+      <button class="icon-btn" onclick="deleteTask('${t.id}')" title="Delete">🗑️</button>
+    </div>`;
+  }).join('');
+
+  const addRow=`<div class="add-task-row">
+    <input id="quick-${j.id}" placeholder="Quick add task — press Enter…" onkeydown="if(event.key==='Enter')quickAdd('${j.id}')">
+    <button class="btn sm primary" onclick="quickAdd('${j.id}')">Add</button>
+    <button class="btn sm" onclick="openTaskModalForJob('${j.id}')">More options</button>
+  </div>`;
+
+  return(sorted.length?rows:'<div class="no-tasks">No tasks yet — use the row below to add one.</div>')+addRow;
+}
+
+function toggleGroup(id){collapsed[id]=!collapsed[id];render();}
+
+function quickAdd(jobId){
+  const el=document.getElementById('quick-'+jobId);
+  const name=(el?el.value:'').trim();
+  if(!name)return;
+  tasks.push({id:uid(),jobId,name,desc:'',status:'To do',priority:'normal',assignee:'',due:'',notes:'',created:new Date().toISOString()});
+  persist();if(el)el.value='';render();
+}
+
+function toggleDone(id){
+  const t=tasks.find(x=>x.id===id);if(!t)return;
+  t.status=t.status==='Done'?'To do':'Done';
+  persist();render();
+}
+function deleteTask(id){if(confirm('Delete this task?')){tasks=tasks.filter(t=>t.id!==id);persist();render();}}
+
+function openTaskModal(id){
+  editTaskId=id||null;
+  const t=id?(tasks.find(x=>x.id===id)||{}):{};
+  document.getElementById('modal-title').textContent=id?'Edit task':'Add task';
+  document.getElementById('t-jobId').value=t.jobId||'';
+  document.getElementById('t-name').value=t.name||'';
+  document.getElementById('t-desc').value=t.desc||'';
+  document.getElementById('t-status').value=t.status||'To do';
+  document.getElementById('t-priority').value=t.priority||'normal';
+  document.getElementById('t-assignee').value=t.assignee||'';
+  document.getElementById('t-due').value=t.due||'';
+  document.getElementById('t-notes').value=t.notes||'';
+  document.getElementById('modal-bg').classList.add('open');
+  document.getElementById('t-name').focus();
+}
+function openTaskModalForJob(jobId){openTaskModal();document.getElementById('t-jobId').value=jobId;}
+function closeModal(){document.getElementById('modal-bg').classList.remove('open');editTaskId=null;}
+function saveTask(){
+  const jobId=document.getElementById('t-jobId').value;
+  const name=document.getElementById('t-name').value.trim();
+  if(!jobId||!name){alert('Project and task name are required.');return;}
+  const t={id:editTaskId||uid(),jobId,name,
+    desc:document.getElementById('t-desc').value.trim(),
+    status:document.getElementById('t-status').value,
+    priority:document.getElementById('t-priority').value,
+    assignee:document.getElementById('t-assignee').value,
+    due:document.getElementById('t-due').value,
+    notes:document.getElementById('t-notes').value.trim(),
+    created:new Date().toISOString()
+  };
+  if(editTaskId){const i=tasks.findIndex(x=>x.id===editTaskId);if(i>=0)tasks[i]=t;}else tasks.push(t);
+  persist();render();closeModal();
+}
+
+function bgClose(e,id){if(e.target.id===id)document.getElementById(id).classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+['search','f-job','f-status','f-drafter'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el)el.addEventListener('change',render)||el.addEventListener('input',render);
+});
+
+populateSelects();
+render();
+</script>
+</body>
+</html>

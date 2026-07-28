@@ -3,551 +3,306 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JobTrack — Project Database</title>
+<title>JobTrack — Projects</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f2;color:#1a1a18;min-height:100vh;font-size:15px}
-
-/* ── Header ── */
-header{background:#fff;border-bottom:1px solid #e0dfd8;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;position:sticky;top:0;z-index:10}
-.logo{font-size:20px;font-weight:600;letter-spacing:-0.4px;white-space:nowrap}
+header{background:#fff;border-bottom:1px solid #e0dfd8;padding:0.85rem 1.5rem;display:flex;align-items:center;gap:1.5rem;position:sticky;top:0;z-index:10;flex-wrap:wrap}
+.logo{font-size:19px;font-weight:700;letter-spacing:-0.4px;white-space:nowrap;margin-right:0.5rem}
 .logo span{color:#185FA5}
-.stats{display:flex;gap:1.5rem;flex-wrap:wrap}
-.stat{text-align:center}
-.stat-n{font-size:22px;font-weight:600;line-height:1}
-.stat-l{font-size:11px;color:#6b6a65;margin-top:2px;text-transform:uppercase;letter-spacing:0.5px}
-.stat-n.blue{color:#185FA5}
-.stat-n.amber{color:#854F0B}
-.stat-n.red{color:#A32D2D}
-
-/* ── Toolbar ── */
-main{padding:1.25rem 1.5rem}
+nav{display:flex;gap:2px;flex:1;flex-wrap:wrap}
+.nav-a{padding:6px 14px;border-radius:6px;font-size:14px;text-decoration:none;color:#6b6a65;font-weight:500;transition:all 0.1s;white-space:nowrap}
+.nav-a:hover{background:#f0efe8;color:#1a1a18}
+.nav-a.active{background:#E6F1FB;color:#0C447C}
+main{padding:1.25rem 1.5rem;max-width:1400px}
 .toolbar{display:flex;gap:8px;margin-bottom:1rem;align-items:center;flex-wrap:wrap}
-.toolbar input,.toolbar select{
-  font-size:14px;height:36px;padding:0 10px;
-  border:1px solid #c8c7c0;border-radius:6px;
-  background:#fff;color:#1a1a18;outline:none;
-}
+.toolbar input,.toolbar select{font-size:14px;height:36px;padding:0 10px;border:1px solid #c8c7c0;border-radius:6px;background:#fff;color:#1a1a18;outline:none}
 .toolbar input{min-width:220px;flex:1}
 .toolbar input:focus,.toolbar select:focus{border-color:#185FA5;box-shadow:0 0 0 3px rgba(24,95,165,0.12)}
-.btn{
-  height:36px;padding:0 14px;border-radius:6px;
-  border:1px solid #c8c7c0;background:#fff;color:#1a1a18;
-  font-size:14px;cursor:pointer;white-space:nowrap;
-  transition:background 0.12s,border-color 0.12s;
-}
-.btn:hover{background:#f0efe8;border-color:#aaa}
+.btn{height:36px;padding:0 14px;border-radius:6px;border:1px solid #c8c7c0;background:#fff;color:#1a1a18;font-size:14px;cursor:pointer;white-space:nowrap;transition:background 0.12s}
+.btn:hover{background:#f0efe8}
 .btn.primary{background:#185FA5;color:#fff;border-color:#185FA5;font-weight:500}
-.btn.primary:hover{background:#0C447C;border-color:#0C447C}
-.btn.danger{background:#A32D2D;color:#fff;border-color:#A32D2D}
-.btn.danger:hover{background:#791F1F}
-.btn.sm{height:30px;padding:0 10px;font-size:13px}
-
-/* ── Table ── */
+.btn.primary:hover{background:#0C447C}
+.btn.sm{height:28px;padding:0 10px;font-size:12px}
 .table-wrap{overflow-x:auto;border-radius:10px;border:1px solid #e0dfd8}
-table{width:100%;border-collapse:collapse;background:#fff;font-size:14px;min-width:900px}
+table{width:100%;border-collapse:collapse;background:#fff;font-size:14px}
 thead tr{background:#f5f5f2}
-th{
-  padding:9px 14px;text-align:left;font-weight:500;
-  font-size:12px;color:#6b6a65;border-bottom:1px solid #e0dfd8;
-  cursor:pointer;user-select:none;white-space:nowrap;
-  text-transform:uppercase;letter-spacing:0.4px;
-}
+th{padding:9px 14px;text-align:left;font-weight:500;font-size:12px;color:#6b6a65;border-bottom:1px solid #e0dfd8;cursor:pointer;user-select:none;white-space:nowrap;text-transform:uppercase;letter-spacing:0.4px}
 th:hover{color:#1a1a18}
 td{padding:10px 14px;border-bottom:1px solid #f0efe8;vertical-align:middle}
 tbody tr:last-child td{border-bottom:none}
 tbody tr:hover td{background:#fafaf8}
 .sort-icon{opacity:0.4;margin-left:3px;font-size:9px}
-
-/* ── Badges ── */
-.badge{display:inline-block;font-size:12px;padding:2px 9px;border-radius:4px;font-weight:500;white-space:nowrap}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;font-weight:500;white-space:nowrap}
 .b-active{background:#E6F1FB;color:#0C447C}
 .b-review{background:#FAEEDA;color:#633806}
 .b-complete{background:#EAF3DE;color:#27500A}
 .b-onhold{background:#F1EFE8;color:#444441}
 .b-cancelled{background:#FCEBEB;color:#791F1F}
-
-/* ── Due date colors ── */
 .due-ok{color:#6b6a65}
 .due-soon{color:#854F0B;font-weight:500}
 .due-over{color:#A32D2D;font-weight:500}
-
-/* ── Action buttons ── */
-.actions{display:flex;gap:4px;align-items:center}
-.icon-btn{background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:4px;color:#6b6a65;font-size:15px;line-height:1;transition:background 0.1s,color 0.1s}
+.icon-btn{background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:4px;color:#6b6a65;font-size:15px;line-height:1;transition:background 0.1s}
 .icon-btn:hover{background:#f0efe8;color:#1a1a18}
-
-/* ── Empty state ── */
-.empty{text-align:center;padding:3rem 1rem;color:#6b6a65}
-.empty-icon{font-size:36px;margin-bottom:0.75rem}
-.empty h3{font-size:16px;font-weight:500;margin-bottom:0.4rem;color:#1a1a18}
-
-/* ── Modal ── */
+.pbar{width:70px;height:5px;background:#e0dfd8;border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle}
+.pbar-f{height:100%;background:#185FA5;border-radius:3px}
+.task-pill{display:inline-flex;align-items:center;gap:4px;font-size:12px;background:#f0efe8;border:1px solid #e0dfd8;border-radius:4px;padding:2px 7px;cursor:pointer;color:#444441;transition:background 0.1s}
+.task-pill:hover{background:#e5e4dc;border-color:#c8c7c0}
+.task-pill.has-open{background:#E6F1FB;border-color:#B5D4F4;color:#0C447C}
+.empty{text-align:center;padding:3rem;color:#6b6a65}
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100;align-items:center;justify-content:center;padding:1rem}
 .modal-bg.open{display:flex}
-.modal{background:#fff;border-radius:14px;padding:1.75rem;width:580px;max-width:100%;border:1px solid #e0dfd8;max-height:90vh;overflow-y:auto}
-.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
-.modal-header h2{font-size:18px;font-weight:600}
+.modal{background:#fff;border-radius:14px;padding:1.75rem;width:600px;max-width:100%;border:1px solid #e0dfd8;max-height:90vh;overflow-y:auto}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.modal-hdr h2{font-size:18px;font-weight:600}
 .close-btn{background:none;border:none;cursor:pointer;font-size:20px;color:#6b6a65;padding:2px 6px;border-radius:4px}
-.close-btn:hover{background:#f0efe8;color:#1a1a18}
+.close-btn:hover{background:#f0efe8}
 .field{margin-bottom:14px}
 .field label{display:block;font-size:13px;color:#6b6a65;margin-bottom:5px;font-weight:500}
-.field input,.field select,.field textarea{
-  width:100%;padding:8px 11px;
-  border:1px solid #c8c7c0;border-radius:7px;
-  font-size:14px;background:#fff;color:#1a1a18;outline:none;
-  font-family:inherit;
-}
+.field input,.field select,.field textarea{width:100%;padding:8px 11px;border:1px solid #c8c7c0;border-radius:7px;font-size:14px;background:#fff;color:#1a1a18;outline:none;font-family:inherit}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:#185FA5;box-shadow:0 0 0 3px rgba(24,95,165,0.12)}
-.field textarea{height:72px;resize:vertical;line-height:1.5}
+.field textarea{height:68px;resize:vertical;line-height:1.5}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
 .modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:1.5rem;padding-top:1rem;border-top:1px solid #e0dfd8}
-
-/* ── Drafter manager modal ── */
-#dm-list{list-style:none;margin-bottom:1rem}
-#dm-list li{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid #e0dfd8;border-radius:6px;margin-bottom:6px;font-size:14px;background:#fafaf8}
-#dm-list li:empty{display:none}
-.drafter-add{display:flex;gap:8px;margin-bottom:1rem}
-.drafter-add input{flex:1;font-size:14px;height:34px;padding:0 10px;border:1px solid #c8c7c0;border-radius:6px;outline:none}
-.drafter-add input:focus{border-color:#185FA5;box-shadow:0 0 0 3px rgba(24,95,165,0.12)}
-
-/* ── Export / import ── */
-.section-title{font-size:12px;font-weight:500;color:#6b6a65;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.5rem}
-
-/* ── Notes tooltip ── */
-.note-icon{cursor:help;font-size:14px;color:#6b6a65}
-
-/* ── Priority / progress columns ── */
-.pbar{width:80px;height:6px;background:#e0dfd8;border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle}
-.pbar-fill{height:100%;background:#185FA5;border-radius:3px;transition:width 0.2s}
-
-@media(max-width:600px){
-  .row2,.row3{grid-template-columns:1fr}
-  header{gap:0.75rem}
-  .toolbar input{min-width:140px}
-}
+@media(max-width:600px){.row2,.row3{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-
 <header>
   <div class="logo">Job<span>Track</span></div>
-  <nav style="display:flex;gap:6px">
-    <a href="index.html" style="padding:6px 13px;border-radius:6px;font-size:14px;text-decoration:none;background:#E6F1FB;color:#0C447C;border:1px solid #B5D4F4">Job list</a>
-    <a href="dashboard.html" style="padding:6px 13px;border-radius:6px;font-size:14px;text-decoration:none;color:#6b6a65;border:1px solid transparent">Dashboard</a>
+  <nav>
+    <a href="index.html" class="nav-a active">Projects</a>
+    <a href="tasks.html" class="nav-a">Tasks</a>
+    <a href="calendar.html" class="nav-a">Calendar</a>
+    <a href="dashboard.html" class="nav-a">Dashboard</a>
   </nav>
-  <div class="stats">
-    <div class="stat"><div class="stat-n" id="s-total">0</div><div class="stat-l">Total</div></div>
-    <div class="stat"><div class="stat-n blue" id="s-active">0</div><div class="stat-l">Active</div></div>
-    <div class="stat"><div class="stat-n amber" id="s-soon">0</div><div class="stat-l">Due soon</div></div>
-    <div class="stat"><div class="stat-n red" id="s-over">0</div><div class="stat-l">Overdue</div></div>
-  </div>
 </header>
 
 <main>
   <div class="toolbar">
-    <input type="text" id="search" placeholder="🔍  Search jobs, clients, drafters…">
-    <select id="filter-status">
+    <input type="text" id="search" placeholder="Search projects, clients, drafters…">
+    <select id="f-status">
       <option value="">All statuses</option>
       <option>Active</option><option>In review</option><option>Complete</option><option>On hold</option><option>Cancelled</option>
     </select>
-    <select id="filter-drafter"><option value="">All drafters</option></select>
-    <button class="btn" onclick="openDrafterMgr()">👤 Drafters</button>
-    <button class="btn" onclick="exportCSV()">⬇ Export CSV</button>
-    <label class="btn" style="display:inline-flex;align-items:center;cursor:pointer">⬆ Import CSV<input type="file" accept=".csv" style="display:none" onchange="importCSV(this)"></label>
-    <button class="btn primary" onclick="openModal()">+ Add job</button>
+    <select id="f-drafter"><option value="">All drafters</option></select>
+    <button class="btn" onclick="openDrafterMgr()">Drafters</button>
+    <button class="btn" onclick="exportCSV()">Export CSV</button>
+    <label class="btn" style="display:inline-flex;align-items:center;cursor:pointer">Import CSV<input type="file" accept=".csv" style="display:none" onchange="importCSV(this)"></label>
+    <button class="btn primary" onclick="openModal()">+ Add project</button>
   </div>
 
   <div class="table-wrap">
     <table>
-      <thead>
-        <tr>
-          <th onclick="sortBy('jobNo')">Job # <span class="sort-icon" id="si-jobNo"></span></th>
-          <th onclick="sortBy('client')">Client <span class="sort-icon" id="si-client"></span></th>
-          <th onclick="sortBy('description')" style="min-width:180px">Description <span class="sort-icon" id="si-description"></span></th>
-          <th onclick="sortBy('drafter')">Drafter <span class="sort-icon" id="si-drafter"></span></th>
-          <th onclick="sortBy('status')">Status <span class="sort-icon" id="si-status"></span></th>
-          <th onclick="sortBy('dueDesign')">Design due <span class="sort-icon" id="si-dueDesign"></span></th>
-          <th onclick="sortBy('dueDraft')">Draft due <span class="sort-icon" id="si-dueDraft"></span></th>
-          <th onclick="sortBy('dueIssue')">Issue date <span class="sort-icon" id="si-dueIssue"></span></th>
-          <th style="width:80px"></th>
-        </tr>
-      </thead>
+      <thead><tr>
+        <th onclick="sortBy('jobNo')">Job # <span class="sort-icon" id="si-jobNo"></span></th>
+        <th onclick="sortBy('client')">Client <span class="sort-icon" id="si-client"></span></th>
+        <th onclick="sortBy('description')" style="min-width:160px">Description <span class="sort-icon" id="si-description"></span></th>
+        <th onclick="sortBy('drafter')">Drafter <span class="sort-icon" id="si-drafter"></span></th>
+        <th onclick="sortBy('status')">Status <span class="sort-icon" id="si-status"></span></th>
+        <th onclick="sortBy('dueIssue')">Issue date <span class="sort-icon" id="si-dueIssue"></span></th>
+        <th>Progress</th>
+        <th>Tasks</th>
+        <th></th>
+      </tr></thead>
       <tbody id="job-list"></tbody>
     </table>
   </div>
 </main>
 
-<!-- ── Add / Edit Job Modal ── -->
+<!-- Job modal -->
 <div class="modal-bg" id="modal-bg" onclick="bgClose(event,'modal-bg')">
   <div class="modal">
-    <div class="modal-header">
-      <h2 id="modal-title">Add job</h2>
-      <button class="close-btn" onclick="closeModal()">✕</button>
-    </div>
-
+    <div class="modal-hdr"><h2 id="modal-title">Add project</h2><button class="close-btn" onclick="closeModal()">✕</button></div>
     <div class="row2">
-      <div class="field"><label>Job number *</label><input id="f-jobNo" placeholder="e.g. 2025-001" required></div>
-      <div class="field"><label>Client name *</label><input id="f-client" placeholder="Client or company" required></div>
+      <div class="field"><label>Job number *</label><input id="f-jobNo" placeholder="e.g. 2025-001"></div>
+      <div class="field"><label>Client name *</label><input id="f-client" placeholder="Client or company"></div>
     </div>
-    <div class="field"><label>Description</label><textarea id="f-description" placeholder="Brief project description, scope, or location"></textarea></div>
+    <div class="field"><label>Description</label><textarea id="f-description" placeholder="Project scope, location, or notes"></textarea></div>
     <div class="row2">
-      <div class="field">
-        <label>Assigned drafter</label>
-        <select id="f-drafter"><option value="">— Unassigned —</option></select>
-      </div>
-      <div class="field">
-        <label>Status</label>
-        <select id="f-status">
-          <option>Active</option><option>In review</option><option>Complete</option><option>On hold</option><option>Cancelled</option>
-        </select>
-      </div>
+      <div class="field"><label>Assigned drafter</label><select id="f-drafter"><option value="">— Unassigned —</option></select></div>
+      <div class="field"><label>Status</label><select id="f-status-field"><option>Active</option><option>In review</option><option>Complete</option><option>On hold</option><option>Cancelled</option></select></div>
     </div>
     <div class="row3">
-      <div class="field"><label>Design due date</label><input type="date" id="f-dueDesign"></div>
-      <div class="field"><label>Draft due date</label><input type="date" id="f-dueDraft"></div>
-      <div class="field"><label>Issue / delivery date</label><input type="date" id="f-dueIssue"></div>
+      <div class="field"><label>Design due</label><input type="date" id="f-dueDesign"></div>
+      <div class="field"><label>Draft due</label><input type="date" id="f-dueDraft"></div>
+      <div class="field"><label>Issue date</label><input type="date" id="f-dueIssue"></div>
     </div>
     <div class="row2">
-      <div class="field"><label>Priority</label>
-        <select id="f-priority"><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option><option value="low">Low</option></select>
-      </div>
+      <div class="field"><label>Priority</label><select id="f-priority"><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option><option value="low">Low</option></select></div>
       <div class="field"><label>% Complete</label><input type="number" id="f-pct" min="0" max="100" placeholder="0–100"></div>
     </div>
-    <div class="field"><label>Notes</label><textarea id="f-notes" placeholder="Any additional notes, links, or comments…"></textarea></div>
-
+    <div class="field"><label>Notes</label><textarea id="f-notes" placeholder="Additional notes…"></textarea></div>
     <div class="modal-btns">
       <button class="btn" onclick="closeModal()">Cancel</button>
-      <button class="btn primary" onclick="saveJob()">Save job</button>
+      <button class="btn primary" onclick="saveJob()">Save project</button>
     </div>
   </div>
 </div>
 
-<!-- ── Drafter Manager Modal ── -->
+<!-- Drafter manager modal -->
 <div class="modal-bg" id="dm-bg" onclick="bgClose(event,'dm-bg')">
   <div class="modal" style="width:400px">
-    <div class="modal-header">
-      <h2>Manage drafters</h2>
-      <button class="close-btn" onclick="closeDrafterMgr()">✕</button>
-    </div>
-    <div class="drafter-add">
-      <input id="new-drafter" placeholder="Add drafter name…" onkeydown="if(event.key==='Enter')addDrafter()">
+    <div class="modal-hdr"><h2>Manage drafters</h2><button class="close-btn" onclick="closeDM()">✕</button></div>
+    <div style="display:flex;gap:8px;margin-bottom:1rem">
+      <input id="new-drafter" placeholder="Add drafter name…" onkeydown="if(event.key==='Enter')addDrafter()" style="flex:1;font-size:14px;height:34px;padding:0 10px;border:1px solid #c8c7c0;border-radius:6px;outline:none">
       <button class="btn primary" onclick="addDrafter()">Add</button>
     </div>
-    <ul id="dm-list"></ul>
-    <div class="modal-btns">
-      <button class="btn primary" onclick="closeDrafterMgr()">Done</button>
-    </div>
+    <ul id="dm-list" style="list-style:none;margin-bottom:1rem"></ul>
+    <div class="modal-btns"><button class="btn primary" onclick="closeDM()">Done</button></div>
   </div>
 </div>
 
 <script>
-// ── State ──────────────────────────────────────────────────────────────────
-let jobs = JSON.parse(localStorage.getItem('jt_jobs') || '[]');
-let drafters = JSON.parse(localStorage.getItem('jt_drafters') || JSON.stringify(['Alex Chen','Jordan Smith','Morgan Lee','Sam Rivera','Taylor Kim','Casey Brown']));
-let editId = null;
-let sortCol = 'jobNo';
-let sortAsc = true;
+const SC={Active:'b-active','In review':'b-review',Complete:'b-complete','On hold':'b-onhold',Cancelled:'b-cancelled'};
+const PI={high:'🔴',urgent:'🚨',low:'⬇️',normal:''};
+let jobs=JSON.parse(localStorage.getItem('jt_jobs')||'[]');
+let drafters=JSON.parse(localStorage.getItem('jt_drafters')||JSON.stringify(['Alex Chen','Jordan Smith','Morgan Lee','Sam Rivera','Taylor Kim','Casey Brown']));
+let tasks=JSON.parse(localStorage.getItem('jt_tasks')||'[]');
+let editId=null,sortCol='jobNo',sortAsc=true;
 
-function persist() {
-  localStorage.setItem('jt_jobs', JSON.stringify(jobs));
-  localStorage.setItem('jt_drafters', JSON.stringify(drafters));
+function persist(){localStorage.setItem('jt_jobs',JSON.stringify(jobs));localStorage.setItem('jt_drafters',JSON.stringify(drafters));localStorage.setItem('jt_tasks',JSON.stringify(tasks));}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function daysDiff(d){if(!d)return null;const t=new Date(d+'T00:00:00'),n=new Date();n.setHours(0,0,0,0);return Math.round((t-n)/86400000);}
+function fmtDate(d){if(!d)return'—';const[y,m,day]=d.split('-');return`${m}/${day}/${y}`;}
+function dueCls(d,s){if(s==='Complete'||s==='Cancelled')return'';const n=daysDiff(d);if(n===null)return'';return n<0?'due-over':n<=7?'due-soon':'due-ok';}
+function dueLabel(d,s){if(!d)return'—';const n=daysDiff(d),b=fmtDate(d);if(s==='Complete'||s==='Cancelled')return b;if(n<0)return b+` <small>(${Math.abs(n)}d over)</small>`;if(n===0)return b+' <small>(today)</small>';if(n<=7)return b+` <small>(${n}d)</small>`;return b;}
+
+function refreshDrafterSelects(){
+  const o='<option value="">— Unassigned —</option>'+drafters.sort().map(d=>`<option>${d}</option>`).join('');
+  document.getElementById('f-drafter').innerHTML=o;
+  const fo='<option value="">All drafters</option>'+drafters.sort().map(d=>`<option>${d}</option>`).join('');
+  document.getElementById('f-drafter') && (document.getElementById('f-drafter').innerHTML=o);
+  document.getElementById('f-drafter-filter') && (document.getElementById('f-drafter-filter').innerHTML=fo);
+  const fd=document.getElementById('f-drafter');
+  if(fd)fd.innerHTML=o;
+  const fdf=document.getElementById('f-drafter');
+  const filterEl=document.querySelector('#f-drafter[data-filter]');
 }
 
-// ── Utilities ──────────────────────────────────────────────────────────────
-function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
-
-function daysDiff(d) {
-  if (!d) return null;
-  const target = new Date(d + 'T00:00:00');
-  const today = new Date(); today.setHours(0,0,0,0);
-  return Math.round((target - today) / 86400000);
-}
-
-function fmtDate(d) {
-  if (!d) return '—';
-  const [y, m, day] = d.split('-');
-  return `${m}/${day}/${y}`;
-}
-
-function dueCls(d, status) {
-  if (status === 'Complete' || status === 'Cancelled') return 'due-ok';
-  const n = daysDiff(d);
-  if (n === null) return '';
-  if (n < 0) return 'due-over';
-  if (n <= 7) return 'due-soon';
-  return 'due-ok';
-}
-
-function dueLabel(d, status) {
-  if (!d) return '—';
-  const n = daysDiff(d);
-  const base = fmtDate(d);
-  if (status === 'Complete' || status === 'Cancelled') return base;
-  if (n < 0) return `${base} <small style="font-size:11px">(${Math.abs(n)}d over)</small>`;
-  if (n === 0) return `${base} <small style="font-size:11px">(today)</small>`;
-  if (n <= 7) return `${base} <small style="font-size:11px">(${n}d)</small>`;
-  return base;
-}
-
-const STATUS_CLASS = {
-  'Active': 'b-active', 'In review': 'b-review',
-  'Complete': 'b-complete', 'On hold': 'b-onhold', 'Cancelled': 'b-cancelled'
-};
-
-const PRIORITY_ICON = { high: '🔴', urgent: '🚨', low: '⬇', normal: '' };
-
-// ── Render ─────────────────────────────────────────────────────────────────
-function render() {
-  const q = document.getElementById('search').value.toLowerCase();
-  const fs = document.getElementById('filter-status').value;
-  const fd = document.getElementById('filter-drafter').value;
-
-  let list = jobs.filter(j => {
-    if (fs && j.status !== fs) return false;
-    if (fd && j.drafter !== fd) return false;
-    if (q && ![j.jobNo, j.client, j.description, j.drafter, j.notes].join(' ').toLowerCase().includes(q)) return false;
+function render(){
+  const q=document.getElementById('search').value.toLowerCase();
+  const fs=document.getElementById('f-status').value;
+  const fd=document.getElementById('f-drafter').value;
+  let list=jobs.filter(j=>{
+    if(fs&&j.status!==fs)return false;
+    if(fd&&j.drafter!==fd)return false;
+    if(q&&![j.jobNo,j.client,j.description,j.drafter,j.notes].join(' ').toLowerCase().includes(q))return false;
     return true;
   });
-
-  list.sort((a, b) => {
-    const av = (a[sortCol] || '').toString();
-    const bv = (b[sortCol] || '').toString();
-    return sortAsc ? av.localeCompare(bv, undefined, {numeric:true}) : bv.localeCompare(av, undefined, {numeric:true});
-  });
-
-  // Update sort icons
-  document.querySelectorAll('.sort-icon').forEach(el => el.textContent = '');
-  const si = document.getElementById('si-' + sortCol);
-  if (si) si.textContent = sortAsc ? '▲' : '▼';
-
-  const tbody = document.getElementById('job-list');
-  if (!list.length) {
-    tbody.innerHTML = `<tr><td colspan="9" class="empty">
-      <div class="empty-icon">📂</div>
-      <h3>${jobs.length ? 'No matches' : 'No jobs yet'}</h3>
-      <p>${jobs.length ? 'Try adjusting your filters.' : 'Click "+ Add job" to get started.'}</p>
-    </td></tr>`;
-  } else {
-    tbody.innerHTML = list.map(j => {
-      const pct = parseInt(j.pct || 0, 10);
-      const pbar = pct > 0 ? `<div class="pbar" title="${pct}% complete"><div class="pbar-fill" style="width:${pct}%"></div></div>` : '';
-      const pri = PRIORITY_ICON[j.priority] || '';
-      const noteIcon = j.notes ? `<span class="note-icon" title="${j.notes.replace(/"/g,"&quot;")}">📝</span>` : '';
-      return `<tr>
-        <td><strong>${j.jobNo || '—'}</strong> ${pri}</td>
-        <td>${j.client || '—'}</td>
-        <td style="max-width:220px">
-          <div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${(j.description||'').replace(/"/g,'&quot;')}">${j.description || '—'}</div>
-          ${pbar}
-        </td>
-        <td>${j.drafter || '<span style="color:#aaa">—</span>'}</td>
-        <td><span class="badge ${STATUS_CLASS[j.status] || ''}">${j.status}</span></td>
-        <td class="${dueCls(j.dueDesign, j.status)}">${dueLabel(j.dueDesign, j.status)}</td>
-        <td class="${dueCls(j.dueDraft, j.status)}">${dueLabel(j.dueDraft, j.status)}</td>
-        <td class="${dueCls(j.dueIssue, j.status)}">${dueLabel(j.dueIssue, j.status)}</td>
-        <td>
-          <div class="actions">
-            ${noteIcon}
-            <button class="icon-btn" onclick="openModal('${j.id}')" title="Edit">✏️</button>
-            <button class="icon-btn" onclick="deleteJob('${j.id}')" title="Delete">🗑️</button>
-          </div>
-        </td>
-      </tr>`;
-    }).join('');
-  }
-
-  // Stats
-  let over = 0, soon = 0;
-  jobs.forEach(j => {
-    if (j.status === 'Complete' || j.status === 'Cancelled') return;
-    ['dueDesign', 'dueDraft', 'dueIssue'].forEach(k => {
-      const n = daysDiff(j[k]);
-      if (n === null) return;
-      if (n < 0) over++;
-      else if (n <= 7) soon++;
-    });
-  });
-  document.getElementById('s-total').textContent = jobs.length;
-  document.getElementById('s-active').textContent = jobs.filter(j => j.status === 'Active').length;
-  document.getElementById('s-soon').textContent = soon;
-  document.getElementById('s-over').textContent = over;
+  list.sort((a,b)=>{const av=(a[sortCol]||'').toString(),bv=(b[sortCol]||'').toString();return sortAsc?av.localeCompare(bv,undefined,{numeric:true}):bv.localeCompare(av,undefined,{numeric:true});});
+  document.querySelectorAll('.sort-icon').forEach(e=>e.textContent='');
+  const si=document.getElementById('si-'+sortCol);if(si)si.textContent=sortAsc?'▲':'▼';
+  const tbody=document.getElementById('job-list');
+  if(!list.length){tbody.innerHTML=`<tr><td colspan="9" class="empty">${jobs.length?'No matches — adjust your filters.':'No projects yet. Click "+ Add project" to get started.'}</td></tr>`;return;}
+  tbody.innerHTML=list.map(j=>{
+    const pct=parseInt(j.pct||0,10);
+    const jTasks=tasks.filter(t=>t.jobId===j.id);
+    const openTasks=jTasks.filter(t=>t.status!=='Done').length;
+    const taskCls=openTasks>0?'task-pill has-open':'task-pill';
+    const taskLabel=jTasks.length===0?'+ tasks':`${openTasks} open / ${jTasks.length}`;
+    return`<tr>
+      <td><strong>${j.jobNo||'—'}</strong> ${PI[j.priority]||''}</td>
+      <td>${j.client||'—'}</td>
+      <td style="max-width:200px"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${(j.description||'').replace(/"/g,'&quot;')}">${j.description||'—'}</div></td>
+      <td>${j.drafter||'<span style="color:#aaa">—</span>'}</td>
+      <td><span class="badge ${SC[j.status]||''}">${j.status}</span></td>
+      <td class="${dueCls(j.dueIssue,j.status)}">${dueLabel(j.dueIssue,j.status)}</td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="pbar"><div class="pbar-f" style="width:${pct}%"></div></div><span style="font-size:12px;color:#6b6a65">${pct}%</span></div></td>
+      <td><span class="${taskCls}" onclick="goTasks('${j.id}')">${taskLabel}</span></td>
+      <td><button class="icon-btn" onclick="openModal('${j.id}')" title="Edit">✏️</button> <button class="icon-btn" onclick="deleteJob('${j.id}')" title="Delete">🗑️</button></td>
+    </tr>`;
+  }).join('');
 }
 
-function sortBy(col) {
-  sortAsc = sortCol === col ? !sortAsc : true;
-  sortCol = col;
-  render();
-}
+function goTasks(jobId){window.location.href='tasks.html?job='+jobId;}
+function sortBy(c){sortAsc=sortCol===c?!sortAsc:true;sortCol=c;render();}
 
-// ── Drafter selects ────────────────────────────────────────────────────────
-function refreshDrafterSelects() {
-  const opts = '<option value="">— Unassigned —</option>' + drafters.sort().map(d => `<option>${d}</option>`).join('');
-  document.getElementById('f-drafter').innerHTML = opts;
-  const fopts = '<option value="">All drafters</option>' + drafters.sort().map(d => `<option>${d}</option>`).join('');
-  document.getElementById('filter-drafter').innerHTML = fopts;
-}
-
-// ── Job modal ──────────────────────────────────────────────────────────────
-function openModal(id) {
-  editId = id || null;
-  const j = id ? (jobs.find(x => x.id === id) || {}) : {};
-  document.getElementById('modal-title').textContent = id ? 'Edit job' : 'Add job';
-  ['jobNo','client','description','drafter','status','dueDesign','dueDraft','dueIssue','notes','priority','pct'].forEach(f => {
-    const el = document.getElementById('f-' + f);
-    if (el) el.value = j[f] !== undefined ? j[f] : (f === 'status' ? 'Active' : f === 'priority' ? 'normal' : '');
+function openModal(id){
+  editId=id||null;
+  const j=id?(jobs.find(x=>x.id===id)||{}):{};
+  document.getElementById('modal-title').textContent=id?'Edit project':'Add project';
+  ['jobNo','client','description','drafter','dueDesign','dueDraft','dueIssue','notes','priority','pct'].forEach(f=>{
+    const el=document.getElementById('f-'+f);if(el)el.value=j[f]!==undefined?j[f]:(f==='priority'?'normal':'');
   });
+  document.getElementById('f-status-field').value=j.status||'Active';
   refreshDrafterSelects();
-  if (j.drafter) document.getElementById('f-drafter').value = j.drafter;
+  if(j.drafter)document.getElementById('f-drafter').value=j.drafter;
   document.getElementById('modal-bg').classList.add('open');
   document.getElementById('f-jobNo').focus();
 }
-
-function closeModal() {
-  document.getElementById('modal-bg').classList.remove('open');
-  editId = null;
-}
-
-function saveJob() {
-  const jobNo = document.getElementById('f-jobNo').value.trim();
-  const client = document.getElementById('f-client').value.trim();
-  if (!jobNo || !client) { alert('Job number and client name are required.'); return; }
-  const j = {
-    id: editId || uid(),
-    jobNo, client,
-    description: document.getElementById('f-description').value.trim(),
-    drafter: document.getElementById('f-drafter').value,
-    status: document.getElementById('f-status').value,
-    dueDesign: document.getElementById('f-dueDesign').value,
-    dueDraft: document.getElementById('f-dueDraft').value,
-    dueIssue: document.getElementById('f-dueIssue').value,
-    priority: document.getElementById('f-priority').value,
-    pct: document.getElementById('f-pct').value,
-    notes: document.getElementById('f-notes').value.trim(),
-    updated: new Date().toISOString(),
+function closeModal(){document.getElementById('modal-bg').classList.remove('open');editId=null;}
+function saveJob(){
+  const jobNo=document.getElementById('f-jobNo').value.trim();
+  const client=document.getElementById('f-client').value.trim();
+  if(!jobNo||!client){alert('Job number and client name are required.');return;}
+  const j={id:editId||uid(),jobNo,client,
+    description:document.getElementById('f-description').value.trim(),
+    drafter:document.getElementById('f-drafter').value,
+    status:document.getElementById('f-status-field').value,
+    dueDesign:document.getElementById('f-dueDesign').value,
+    dueDraft:document.getElementById('f-dueDraft').value,
+    dueIssue:document.getElementById('f-dueIssue').value,
+    priority:document.getElementById('f-priority').value,
+    pct:document.getElementById('f-pct').value,
+    notes:document.getElementById('f-notes').value.trim(),
+    updated:new Date().toISOString()
   };
-  if (editId) {
-    const i = jobs.findIndex(x => x.id === editId);
-    if (i >= 0) jobs[i] = j;
-  } else {
-    jobs.push(j);
-  }
-  persist();
-  render();
-  closeModal();
+  if(editId){const i=jobs.findIndex(x=>x.id===editId);if(i>=0)jobs[i]=j;}else jobs.push(j);
+  persist();render();closeModal();
 }
-
-function deleteJob(id) {
-  const j = jobs.find(x => x.id === id);
-  if (!j) return;
-  if (confirm(`Delete job "${j.jobNo} — ${j.client}"? This cannot be undone.`)) {
-    jobs = jobs.filter(x => x.id !== id);
-    persist();
-    render();
+function deleteJob(id){
+  const j=jobs.find(x=>x.id===id);if(!j)return;
+  if(confirm(`Delete "${j.jobNo} — ${j.client}"? All tasks for this project will also be deleted.`)){
+    jobs=jobs.filter(x=>x.id!==id);tasks=tasks.filter(t=>t.jobId!==id);persist();render();
   }
 }
 
-// ── Drafter manager ────────────────────────────────────────────────────────
-function openDrafterMgr() {
-  renderDrafterList();
-  document.getElementById('dm-bg').classList.add('open');
-  document.getElementById('new-drafter').focus();
+function openDrafterMgr(){renderDM();document.getElementById('dm-bg').classList.add('open');document.getElementById('new-drafter').focus();}
+function closeDM(){document.getElementById('dm-bg').classList.remove('open');refreshDrafterSelects();render();}
+function renderDM(){
+  const ul=document.getElementById('dm-list');
+  ul.innerHTML=drafters.sort().map(d=>`<li style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border:1px solid #e0dfd8;border-radius:6px;margin-bottom:6px;font-size:14px;background:#fafaf8"><span>${d}</span><button class="btn sm" onclick="removeDrafter('${d.replace(/'/g,"\\'")}')">Remove</button></li>`).join('');
 }
+function addDrafter(){const v=document.getElementById('new-drafter').value.trim();if(!v)return;if(drafters.includes(v)){alert('Already in list.');return;}drafters.push(v);persist();renderDM();document.getElementById('new-drafter').value='';}
+function removeDrafter(n){if(jobs.some(j=>j.drafter===n)&&!confirm(`"${n}" is assigned to jobs. Remove anyway?`))return;drafters=drafters.filter(d=>d!==n);persist();renderDM();}
 
-function closeDrafterMgr() {
-  document.getElementById('dm-bg').classList.remove('open');
-  refreshDrafterSelects();
-  render();
+const CSV_FIELDS=['jobNo','client','description','drafter','status','dueDesign','dueDraft','dueIssue','priority','pct','notes'];
+function exportCSV(){
+  const rows=[CSV_FIELDS.join(',')];
+  jobs.forEach(j=>rows.push(CSV_FIELDS.map(f=>`"${(j[f]||'').toString().replace(/"/g,'""')}"`).join(',')));
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));a.download=`jobtrack-${new Date().toISOString().slice(0,10)}.csv`;a.click();
 }
-
-function renderDrafterList() {
-  const ul = document.getElementById('dm-list');
-  if (!drafters.length) { ul.innerHTML = '<li style="color:#aaa;font-size:13px;padding:6px 0">No drafters added yet.</li>'; return; }
-  ul.innerHTML = drafters.sort().map(d => `
-    <li>
-      <span>${d}</span>
-      <button class="btn sm" onclick="removeDrafter('${d.replace(/'/g,"\\'")}')" style="color:#A32D2D;border-color:#A32D2D">Remove</button>
-    </li>`).join('');
-}
-
-function addDrafter() {
-  const val = document.getElementById('new-drafter').value.trim();
-  if (!val) return;
-  if (drafters.includes(val)) { alert('That drafter is already in the list.'); return; }
-  drafters.push(val);
-  persist();
-  renderDrafterList();
-  document.getElementById('new-drafter').value = '';
-  document.getElementById('new-drafter').focus();
-}
-
-function removeDrafter(name) {
-  const inUse = jobs.some(j => j.drafter === name);
-  if (inUse && !confirm(`"${name}" is assigned to one or more jobs. Remove anyway?`)) return;
-  drafters = drafters.filter(d => d !== name);
-  persist();
-  renderDrafterList();
-}
-
-// ── Export / Import CSV ────────────────────────────────────────────────────
-const CSV_FIELDS = ['jobNo','client','description','drafter','status','dueDesign','dueDraft','dueIssue','priority','pct','notes'];
-
-function exportCSV() {
-  const rows = [CSV_FIELDS.join(',')];
-  jobs.forEach(j => {
-    rows.push(CSV_FIELDS.map(f => {
-      const v = (j[f] || '').toString().replace(/"/g, '""');
-      return `"${v}"`;
-    }).join(','));
-  });
-  const blob = new Blob([rows.join('\n')], {type:'text/csv'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `jobtrack-${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-}
-
-function importCSV(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const lines = e.target.result.split('\n').filter(Boolean);
-    if (lines.length < 2) { alert('CSV appears empty.'); return; }
-    const headers = lines[0].split(',').map(h => h.replace(/"/g,'').trim());
-    let added = 0;
-    for (let i = 1; i < lines.length; i++) {
-      const vals = lines[i].match(/(".*?"|[^,]+)(?=,|$)/g) || [];
-      const row = {};
-      headers.forEach((h, idx) => { row[h] = (vals[idx] || '').replace(/^"|"$/g,'').replace(/""/g,'"').trim(); });
-      if (!row.jobNo || !row.client) continue;
-      row.id = uid();
-      row.updated = new Date().toISOString();
-      jobs.push(row);
-      added++;
+function importCSV(input){
+  const file=input.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    const lines=e.target.result.split('\n').filter(Boolean);if(lines.length<2){alert('CSV appears empty.');return;}
+    const headers=lines[0].split(',').map(h=>h.replace(/"/g,'').trim());
+    let added=0;
+    for(let i=1;i<lines.length;i++){
+      const vals=lines[i].match(/(".*?"|[^,]+)(?=,|$)/g)||[];
+      const row={};headers.forEach((h,idx)=>{row[h]=(vals[idx]||'').replace(/^"|"$/g,'').replace(/""/g,'"').trim();});
+      if(!row.jobNo||!row.client)continue;row.id=uid();row.updated=new Date().toISOString();jobs.push(row);added++;
     }
-    persist();
-    refreshDrafterSelects();
-    render();
-    alert(`Imported ${added} job(s).`);
-  };
-  reader.readAsText(file);
-  input.value = '';
+    persist();refreshAll();alert(`Imported ${added} project(s).`);
+  };r.readAsText(file);input.value='';
 }
 
-// ── Shared close helpers ───────────────────────────────────────────────────
-function bgClose(e, id) { if (e.target.id === id) { document.getElementById(id).classList.remove('open'); } }
+function bgClose(e,id){if(e.target.id===id)document.getElementById(id).classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeDM();}});
+document.getElementById('search').addEventListener('input',render);
+document.getElementById('f-status').addEventListener('change',render);
 
-// ── Event listeners ────────────────────────────────────────────────────────
-document.getElementById('search').addEventListener('input', render);
-document.getElementById('filter-status').addEventListener('change', render);
-document.getElementById('filter-drafter').addEventListener('change', render);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeDrafterMgr(); } });
+function refreshAll(){
+  // populate filter drafter select
+  const fd=document.getElementById('f-drafter');
+  fd.innerHTML='<option value="">All drafters</option>'+drafters.sort().map(d=>`<option>${d}</option>`).join('');
+  render();
+}
 
-// ── Init ───────────────────────────────────────────────────────────────────
-refreshDrafterSelects();
-render();
+refreshAll();
 </script>
 </body>
 </html>
