@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JobTrack — Workload Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f2;color:#1a1a18;min-height:100vh;font-size:15px}
+
+header{background:#fff;border-bottom:1px solid #e0dfd8;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;position:sticky;top:0;z-index:10}
+.logo{font-size:20px;font-weight:600;letter-spacing:-0.4px;white-space:nowrap}
+.logo span{color:#185FA5}
+nav{display:flex;gap:8px}
+.nav-link{padding:6px 14px;border-radius:6px;font-size:14px;text-decoration:none;color:#6b6a65;border:1px solid transparent;transition:all 0.1s}
+.nav-link:hover{background:#f0efe8;color:#1a1a18}
+.nav-link.active{background:#E6F1FB;color:#0C447C;border-color:#B5D4F4}
+.header-right{display:flex;align-items:center;gap:12px}
+.last-update{font-size:12px;color:#6b6a65}
+
+main{padding:1.25rem 1.5rem;max-width:1300px}
+
+/* ── KPI row ── */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.5rem}
+.kpi{background:#fff;border:1px solid #e0dfd8;border-radius:10px;padding:0.9rem 1.1rem}
+.kpi-n{font-size:26px;font-weight:600;line-height:1;margin-bottom:4px}
+.kpi-l{font-size:11px;color:#6b6a65;text-transform:uppercase;letter-spacing:0.5px}
+.kpi-n.blue{color:#185FA5}
+.kpi-n.amber{color:#854F0B}
+.kpi-n.red{color:#A32D2D}
+.kpi-n.green{color:#27500A}
+
+/* ── Section titles ── */
+.section-title{font-size:12px;font-weight:500;color:#6b6a65;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.9rem}
+
+/* ── Drafter cards ── */
+.drafter-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-bottom:1.75rem}
+.dcard{background:#fff;border:1px solid #e0dfd8;border-radius:12px;padding:1.1rem 1.2rem;transition:border-color 0.15s}
+.dcard:hover{border-color:#c0bfb8}
+.dcard-head{display:flex;align-items:center;gap:11px;margin-bottom:1rem}
+.avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;letter-spacing:0.3px}
+.dcard-name{font-size:15px;font-weight:600}
+.dcard-sub{font-size:12px;color:#6b6a65;margin-top:2px}
+.load-bar-wrap{margin-bottom:0.9rem}
+.load-label{display:flex;justify-content:space-between;font-size:12px;color:#6b6a65;margin-bottom:5px}
+.load-bar{height:7px;background:#e0dfd8;border-radius:4px;overflow:hidden}
+.load-fill{height:100%;border-radius:4px;transition:width 0.4s ease}
+.mini-jobs{border-top:1px solid #f0efe8;padding-top:0.8rem}
+.mini-job{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f5f5f2}
+.mini-job:last-child{border-bottom:none}
+.mini-left{overflow:hidden;flex:1;margin-right:8px}
+.mini-job-no{font-size:11px;color:#6b6a65;margin-bottom:1px}
+.mini-job-client{font-size:13px;color:#1a1a18;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+.mini-due{font-size:11px;color:#6b6a65;white-space:nowrap}
+.mini-due.over{color:#A32D2D;font-weight:500}
+.mini-due.soon{color:#854F0B;font-weight:500}
+.more-jobs{font-size:12px;color:#6b6a65;padding-top:6px;text-align:center;border-top:1px solid #f0efe8;margin-top:4px}
+.no-jobs{font-size:13px;color:#aaa;padding:6px 0;text-align:center}
+
+/* ── Status badges ── */
+.badge{display:inline-block;font-size:11px;padding:1px 7px;border-radius:3px;font-weight:500;white-space:nowrap}
+.b-active{background:#E6F1FB;color:#0C447C}
+.b-review{background:#FAEEDA;color:#633806}
+.b-complete{background:#EAF3DE;color:#27500A}
+.b-onhold{background:#F1EFE8;color:#444441}
+.b-cancelled{background:#FCEBEB;color:#791F1F}
+
+/* ── Charts section ── */
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:1.75rem}
+.chart-card{background:#fff;border:1px solid #e0dfd8;border-radius:12px;padding:1.1rem 1.2rem}
+
+/* ── Due date timeline ── */
+.timeline-card{background:#fff;border:1px solid #e0dfd8;border-radius:12px;padding:1.1rem 1.2rem;margin-bottom:1.75rem}
+.timeline-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #f5f5f2;font-size:13px}
+.timeline-row:last-child{border-bottom:none}
+.tl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.tl-info{flex:1;min-width:0}
+.tl-top{display:flex;align-items:center;gap:8px;margin-bottom:2px}
+.tl-job{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
+.tl-client{color:#6b6a65;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-drafter{font-size:12px;color:#6b6a65;white-space:nowrap}
+.tl-date{font-size:12px;font-weight:500;text-align:right;white-space:nowrap;flex-shrink:0}
+.tl-type{font-size:11px;color:#6b6a65;background:#f5f5f2;padding:1px 6px;border-radius:3px;white-space:nowrap}
+.tl-date.over{color:#A32D2D}
+.tl-date.soon{color:#854F0B}
+
+/* ── Empty / loading ── */
+.empty{text-align:center;padding:3rem;color:#6b6a65}
+.empty h3{font-size:16px;font-weight:500;margin-bottom:0.5rem;color:#1a1a18}
+
+/* ── Filter bar ── */
+.filter-bar{display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center}
+.filter-bar select{font-size:13px;height:32px;padding:0 8px;border:1px solid #c8c7c0;border-radius:6px;background:#fff;color:#1a1a18;outline:none}
+.filter-bar select:focus{border-color:#185FA5}
+.filter-label{font-size:13px;color:#6b6a65}
+
+@media(max-width:700px){
+  .charts-row{grid-template-columns:1fr}
+  .drafter-grid{grid-template-columns:1fr}
+  .kpi-row{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Job<span>Track</span></div>
+  <nav>
+    <a href="index.html" class="nav-link">Job list</a>
+    <a href="dashboard.html" class="nav-link active">Dashboard</a>
+  </nav>
+  <div class="header-right">
+    <span class="last-update" id="last-update"></span>
+    <button onclick="location.reload()" style="font-size:13px;padding:5px 12px;border:1px solid #c8c7c0;border-radius:6px;background:#fff;cursor:pointer;color:#1a1a18">↻ Refresh</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- KPI row -->
+  <div class="kpi-row" id="kpi-row"></div>
+
+  <!-- Filter bar -->
+  <div class="filter-bar">
+    <span class="filter-label">Filter:</span>
+    <select id="f-status" onchange="renderAll()">
+      <option value="">All statuses</option>
+      <option>Active</option><option>In review</option><option>Complete</option><option>On hold</option><option>Cancelled</option>
+    </select>
+  </div>
+
+  <!-- Drafter workload cards -->
+  <div class="section-title">Workload per drafter</div>
+  <div class="drafter-grid" id="drafter-grid"></div>
+
+  <!-- Charts -->
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="section-title">Active and in-review jobs by drafter</div>
+      <div style="position:relative;height:220px">
+        <canvas id="bar-chart" role="img" aria-label="Horizontal bar chart showing active job count per drafter">Active jobs per drafter.</canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="section-title">Status breakdown</div>
+      <div style="position:relative;height:160px;width:160px;margin:0 auto 0.75rem">
+        <canvas id="pie-chart" role="img" aria-label="Doughnut chart of job status distribution">Job status distribution.</canvas>
+      </div>
+      <div id="pie-legend" style="font-size:13px;display:flex;flex-direction:column;gap:6px"></div>
+    </div>
+  </div>
+
+  <!-- Upcoming due dates -->
+  <div class="timeline-card">
+    <div class="section-title">Upcoming and overdue dates (next 30 days)</div>
+    <div id="timeline"></div>
+  </div>
+
+  <!-- Priority heatmap -->
+  <div class="chart-card" style="margin-bottom:1.75rem">
+    <div class="section-title">Progress by drafter</div>
+    <div id="progress-bars"></div>
+  </div>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// ── Data ──────────────────────────────────────────────────────────────────
+const DEMO_JOBS = [
+  {id:'1',jobNo:'2025-001',client:'Riverside Corp',description:'Site plan & grading',drafter:'Alex Chen',status:'Active',dueDesign:'2025-08-05',dueDraft:'2025-08-12',dueIssue:'2025-08-20',priority:'high',pct:'60',notes:''},
+  {id:'2',jobNo:'2025-002',client:'Northgate LLC',description:'Foundation drawings',drafter:'Alex Chen',status:'In review',dueDesign:'2025-07-25',dueDraft:'2025-07-30',dueIssue:'2025-08-08',priority:'urgent',pct:'90',notes:''},
+  {id:'3',jobNo:'2025-003',client:'Lakewood HOA',description:'Retaining wall design',drafter:'Jordan Smith',status:'Active',dueDesign:'2025-08-10',dueDraft:'2025-08-18',dueIssue:'2025-08-28',priority:'normal',pct:'30',notes:''},
+  {id:'4',jobNo:'2025-004',client:'Metro Transit',description:'Utility crossing plan',drafter:'Jordan Smith',status:'Active',dueDesign:'2025-07-28',dueDraft:'2025-08-03',dueIssue:'2025-08-15',priority:'high',pct:'45',notes:''},
+  {id:'5',jobNo:'2025-005',client:'Sunfield Dev',description:'Subdivision layout',drafter:'Morgan Lee',status:'Complete',dueDesign:'2025-07-10',dueDraft:'2025-07-15',dueIssue:'2025-07-22',priority:'normal',pct:'100',notes:''},
+  {id:'6',jobNo:'2025-006',client:'City of Elmwood',description:'Storm drain design',drafter:'Morgan Lee',status:'Active',dueDesign:'2025-08-01',dueDraft:'2025-08-09',dueIssue:'2025-08-20',priority:'normal',pct:'55',notes:''},
+  {id:'7',jobNo:'2025-007',client:'Pinnacle Homes',description:'Lot grading plan',drafter:'Sam Rivera',status:'On hold',dueDesign:'',dueDraft:'',dueIssue:'2025-09-01',priority:'low',pct:'20',notes:''},
+  {id:'8',jobNo:'2025-008',client:'Harborview Inc',description:'Erosion control plan',drafter:'Sam Rivera',status:'Active',dueDesign:'2025-08-14',dueDraft:'2025-08-22',dueIssue:'2025-09-05',priority:'normal',pct:'10',notes:''},
+  {id:'9',jobNo:'2025-009',client:'Greenway LLC',description:'Trail alignment',drafter:'Taylor Kim',status:'Active',dueDesign:'2025-07-30',dueDraft:'2025-08-06',dueIssue:'2025-08-18',priority:'high',pct:'70',notes:''},
+  {id:'10',jobNo:'2025-010',client:'Harmon Estates',description:'Drainage easement',drafter:'Taylor Kim',status:'In review',dueDesign:'2025-07-22',dueDraft:'2025-07-28',dueIssue:'2025-08-10',priority:'urgent',pct:'85',notes:''},
+  {id:'11',jobNo:'2025-011',client:'Vista Holdings',description:'Cut & fill analysis',drafter:'Casey Brown',status:'Active',dueDesign:'2025-08-20',dueDraft:'2025-08-28',dueIssue:'2025-09-10',priority:'normal',pct:'15',notes:''},
+];
+
+let allJobs = JSON.parse(localStorage.getItem('jt_jobs') || 'null') || DEMO_JOBS;
+const COLORS = ['#2a78d6','#eb6834','#1baf7a','#eda100','#e87ba4','#4a3aa7','#e34948'];
+const AVATAR_COLORS = [
+  {bg:'#E6F1FB',fg:'#0C447C'},{bg:'#EAF3DE',fg:'#27500A'},{bg:'#FAEEDA',fg:'#633806'},
+  {bg:'#EEEDFE',fg:'#3C3489'},{bg:'#FAECE7',fg:'#712B13'},{bg:'#F1EFE8',fg:'#444441'},
+  {bg:'#FBEAF0',fg:'#72243E'}
+];
+const STATUS_COLORS = {
+  'Active':'#2a78d6','In review':'#eda100','Complete':'#1baf7a','On hold':'#888780','Cancelled':'#e34948'
+};
+const STATUS_CLASS = {
+  'Active':'b-active','In review':'b-review','Complete':'b-complete','On hold':'b-onhold','Cancelled':'b-cancelled'
+};
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+function initials(name) { return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+function daysDiff(d) {
+  if (!d) return null;
+  const target = new Date(d + 'T00:00:00');
+  const today = new Date(); today.setHours(0,0,0,0);
+  return Math.round((target - today) / 86400000);
+}
+function fmtDate(d) {
+  if (!d) return '—';
+  const [y, m, day] = d.split('-');
+  return `${m}/${day}/${y}`;
+}
+function nextDue(j) {
+  return [j.dueDesign, j.dueDraft, j.dueIssue].filter(Boolean).sort()[0] || null;
+}
+function dueCls(d, status) {
+  if (status === 'Complete' || status === 'Cancelled') return '';
+  const n = daysDiff(d);
+  if (n === null) return '';
+  if (n < 0) return 'over';
+  if (n <= 7) return 'soon';
+  return '';
+}
+
+let barChart = null, pieChart = null;
+
+function renderAll() {
+  const fs = document.getElementById('f-status').value;
+  const jobs = fs ? allJobs.filter(j => j.status === fs) : allJobs;
+  const drafters = [...new Set(allJobs.map(j => j.drafter).filter(Boolean))].sort();
+
+  renderKPI(jobs);
+  renderDrafterCards(drafters, jobs);
+  renderBarChart(drafters, jobs);
+  renderPieChart(jobs);
+  renderTimeline(allJobs); // always show full timeline regardless of filter
+  renderProgressBars(drafters, allJobs);
+
+  document.getElementById('last-update').textContent = 'Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+}
+
+// ── KPI ───────────────────────────────────────────────────────────────────
+function renderKPI(jobs) {
+  const drafters = [...new Set(jobs.map(j => j.drafter).filter(Boolean))];
+  const active = jobs.filter(j => j.status === 'Active').length;
+  let over = 0, soon = 0;
+  jobs.forEach(j => {
+    if (j.status === 'Complete' || j.status === 'Cancelled') return;
+    ['dueDesign','dueDraft','dueIssue'].forEach(k => {
+      const n = daysDiff(j[k]);
+      if (n === null) return;
+      if (n < 0) over++;
+      else if (n <= 7) soon++;
+    });
+  });
+  const avgPct = jobs.length ? Math.round(jobs.reduce((s,j) => s + parseInt(j.pct||0,10), 0) / jobs.length) : 0;
+  document.getElementById('kpi-row').innerHTML = `
+    <div class="kpi"><div class="kpi-n">${jobs.length}</div><div class="kpi-l">Total jobs</div></div>
+    <div class="kpi"><div class="kpi-n blue">${active}</div><div class="kpi-l">Active</div></div>
+    <div class="kpi"><div class="kpi-n amber">${soon}</div><div class="kpi-l">Due within 7 days</div></div>
+    <div class="kpi"><div class="kpi-n red">${over}</div><div class="kpi-l">Overdue dates</div></div>
+    <div class="kpi"><div class="kpi-n green">${avgPct}%</div><div class="kpi-l">Avg complete</div></div>
+    <div class="kpi"><div class="kpi-n">${drafters.length}</div><div class="kpi-l">Drafters</div></div>
+  `;
+}
+
+// ── Drafter cards ─────────────────────────────────────────────────────────
+function renderDrafterCards(drafters, jobs) {
+  const grid = document.getElementById('drafter-grid');
+  if (!drafters.length) {
+    grid.innerHTML = '<div class="empty"><h3>No data</h3><p>Add jobs with assigned drafters to see workload cards.</p></div>';
+    return;
+  }
+  const MAX_LOAD = 6;
+  grid.innerHTML = '';
+  drafters.forEach((d, i) => {
+    const mine = jobs.filter(j => j.drafter === d);
+    const mineActive = mine.filter(j => j.status === 'Active' || j.status === 'In review');
+    const mineComplete = mine.filter(j => j.status === 'Complete').length;
+    const ac = AVATAR_COLORS[i % AVATAR_COLORS.length];
+    const loadPct = Math.min(100, Math.round((mineActive.length / MAX_LOAD) * 100));
+    const barColor = loadPct >= 100 ? '#A32D2D' : loadPct >= 70 ? '#854F0B' : '#185FA5';
+    const loadLabel = loadPct >= 100 ? 'At capacity' : loadPct >= 70 ? 'Heavy load' : 'Normal';
+
+    const sorted = mineActive.slice().sort((a, b) => {
+      const na = nextDue(a), nb = nextDue(b);
+      if (!na) return 1; if (!nb) return -1;
+      return na.localeCompare(nb);
+    });
+
+    const overdue = mineActive.filter(j => {
+      return ['dueDesign','dueDraft','dueIssue'].some(k => { const n = daysDiff(j[k]); return n !== null && n < 0; });
+    }).length;
+
+    const card = document.createElement('div');
+    card.className = 'dcard';
+    const overdueTag = overdue > 0 ? `<span class="badge b-cancelled">${overdue} overdue</span>` : '';
+    card.innerHTML = `
+      <div class="dcard-head">
+        <div class="avatar" style="background:${ac.bg};color:${ac.fg}">${initials(d)}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <div class="dcard-name">${d}</div>
+            ${overdueTag}
+          </div>
+          <div class="dcard-sub">${mineActive.length} active · ${mineComplete} complete · ${loadLabel}</div>
+        </div>
+      </div>
+      <div class="load-bar-wrap">
+        <div class="load-label">
+          <span>Capacity</span>
+          <span>${mineActive.length} / ${MAX_LOAD}</span>
+        </div>
+        <div class="load-bar">
+          <div class="load-fill" style="width:${loadPct}%;background:${barColor}"></div>
+        </div>
+      </div>
+      <div class="mini-jobs">
+        ${sorted.length === 0
+          ? '<div class="no-jobs">No active jobs</div>'
+          : sorted.slice(0, 5).map(j => {
+              const nd = nextDue(j);
+              const dc = dueCls(nd, j.status);
+              const n = nd ? daysDiff(nd) : null;
+              const dueStr = nd
+                ? (n < 0 ? `${fmtDate(nd)} (${Math.abs(n)}d over)` : n === 0 ? `${fmtDate(nd)} (today)` : n <= 7 ? `${fmtDate(nd)} (${n}d)` : fmtDate(nd))
+                : '—';
+              return `<div class="mini-job">
+                <div class="mini-left">
+                  <div class="mini-job-no">${j.jobNo}</div>
+                  <div class="mini-job-client">${j.client}</div>
+                </div>
+                <div class="mini-right">
+                  <span class="badge ${STATUS_CLASS[j.status]||''}">${j.status}</span>
+                  <span class="mini-due ${dc}">${dueStr}</span>
+                </div>
+              </div>`;
+            }).join('')
+        }
+        ${sorted.length > 5 ? `<div class="more-jobs">+${sorted.length - 5} more job${sorted.length - 5 !== 1 ? 's' : ''}</div>` : ''}
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ── Bar chart ─────────────────────────────────────────────────────────────
+function renderBarChart(drafters, jobs) {
+  const ctx = document.getElementById('bar-chart');
+  const data = drafters.map(d => jobs.filter(j => j.drafter === d && (j.status === 'Active' || j.status === 'In review')).length);
+  const wrapH = Math.max(180, drafters.length * 44 + 60);
+  ctx.parentElement.style.height = wrapH + 'px';
+
+  if (barChart) barChart.destroy();
+  barChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: drafters,
+      datasets: [{
+        label: 'Active / in-review jobs',
+        data,
+        backgroundColor: drafters.map((_, i) => COLORS[i % COLORS.length]),
+        borderRadius: 4,
+        barThickness: 28,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => `${ctx.parsed.x} job${ctx.parsed.x !== 1 ? 's' : ''}` } }
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          ticks: { stepSize: 1, color: '#6b6a65', font: { size: 11 } },
+          grid: { color: '#f0efe8' },
+          border: { display: false }
+        },
+        y: {
+          ticks: { color: '#1a1a18', font: { size: 13 } },
+          grid: { display: false },
+          border: { display: false }
+        }
+      }
+    }
+  });
+}
+
+// ── Pie chart ─────────────────────────────────────────────────────────────
+function renderPieChart(jobs) {
+  const counts = {};
+  jobs.forEach(j => { counts[j.status] = (counts[j.status] || 0) + 1; });
+  const statuses = Object.keys(counts);
+  const ctx = document.getElementById('pie-chart');
+
+  if (pieChart) pieChart.destroy();
+  pieChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: statuses,
+      datasets: [{
+        data: statuses.map(s => counts[s]),
+        backgroundColor: statuses.map(s => STATUS_COLORS[s] || '#ccc'),
+        borderWidth: 2, borderColor: '#fff'
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '60%',
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed}` } }
+      }
+    }
+  });
+
+  document.getElementById('pie-legend').innerHTML = statuses.map(s => `
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="width:10px;height:10px;border-radius:2px;background:${STATUS_COLORS[s]||'#ccc'};flex-shrink:0"></span>
+      <span style="font-size:13px;color:#1a1a18;flex:1">${s}</span>
+      <span style="font-size:13px;color:#6b6a65;font-weight:500">${counts[s]}</span>
+    </div>`).join('');
+}
+
+// ── Timeline ──────────────────────────────────────────────────────────────
+function renderTimeline(jobs) {
+  const DATE_TYPES = [
+    { key: 'dueDesign', label: 'Design due' },
+    { key: 'dueDraft',  label: 'Draft due' },
+    { key: 'dueIssue',  label: 'Issue date' },
+  ];
+  const active = jobs.filter(j => j.status !== 'Complete' && j.status !== 'Cancelled');
+  const entries = [];
+  active.forEach(j => {
+    DATE_TYPES.forEach(dt => {
+      if (!j[dt.key]) return;
+      const n = daysDiff(j[dt.key]);
+      if (n !== null && n <= 30) {
+        entries.push({ job: j, type: dt.label, date: j[dt.key], days: n });
+      }
+    });
+  });
+  entries.sort((a, b) => a.date.localeCompare(b.date));
+  const tl = document.getElementById('timeline');
+  if (!entries.length) {
+    tl.innerHTML = '<div class="empty" style="padding:1.5rem"><p>No due dates in the next 30 days.</p></div>';
+    return;
+  }
+  tl.innerHTML = entries.map(e => {
+    const cls = e.days < 0 ? 'over' : e.days <= 7 ? 'soon' : '';
+    const dotColor = e.days < 0 ? '#A32D2D' : e.days <= 7 ? '#854F0B' : '#185FA5';
+    const dStr = e.days < 0
+      ? `${fmtDate(e.date)} — ${Math.abs(e.days)}d overdue`
+      : e.days === 0 ? `${fmtDate(e.date)} — today`
+      : `${fmtDate(e.date)} — ${e.days}d`;
+    return `<div class="timeline-row">
+      <div class="tl-dot" style="background:${dotColor}"></div>
+      <div class="tl-info">
+        <div class="tl-top">
+          <span class="tl-job">${e.job.jobNo}</span>
+          <span class="tl-client">${e.job.client}</span>
+          <span class="tl-type">${e.type}</span>
+        </div>
+        <div class="tl-drafter">${e.job.drafter || 'Unassigned'} · <span class="badge ${STATUS_CLASS[e.job.status]||''}">${e.job.status}</span></div>
+      </div>
+      <div class="tl-date ${cls}">${dStr}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── Progress bars per drafter ─────────────────────────────────────────────
+function renderProgressBars(drafters, jobs) {
+  const el = document.getElementById('progress-bars');
+  if (!drafters.length) { el.innerHTML = '<div class="empty" style="padding:1rem"><p>No data yet.</p></div>'; return; }
+  el.innerHTML = drafters.map((d, i) => {
+    const mine = jobs.filter(j => j.drafter === d && j.status !== 'Cancelled');
+    const avg = mine.length ? Math.round(mine.reduce((s, j) => s + parseInt(j.pct || 0, 10), 0) / mine.length) : 0;
+    const ac = AVATAR_COLORS[i % AVATAR_COLORS.length];
+    return `<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #f5f5f2">
+      <div class="avatar" style="background:${ac.bg};color:${ac.fg};width:32px;height:32px;font-size:11px">${initials(d)}</div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <span style="font-size:13px;font-weight:500">${d}</span>
+          <span style="font-size:12px;color:#6b6a65">${avg}% avg · ${mine.length} job${mine.length !== 1 ? 's' : ''}</span>
+        </div>
+        <div style="height:6px;background:#e0dfd8;border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${avg}%;background:${avg >= 80 ? '#1baf7a' : avg >= 50 ? '#185FA5' : '#854F0B'};border-radius:3px;transition:width 0.4s"></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+renderAll();
+</script>
+</body>
+</html>
