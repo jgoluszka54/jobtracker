@@ -3,497 +3,516 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JobTrack — Workload Dashboard</title>
+<title>JobTrack — Dashboard</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f2;color:#1a1a18;min-height:100vh;font-size:15px}
-
-header{background:#fff;border-bottom:1px solid #e0dfd8;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;position:sticky;top:0;z-index:10}
-.logo{font-size:20px;font-weight:600;letter-spacing:-0.4px;white-space:nowrap}
+header{background:#fff;border-bottom:1px solid #e0dfd8;padding:0.85rem 1.5rem;display:flex;align-items:center;gap:1.5rem;position:sticky;top:0;z-index:10;flex-wrap:wrap}
+.logo{font-size:19px;font-weight:700;letter-spacing:-0.4px;white-space:nowrap;margin-right:0.5rem}
 .logo span{color:#185FA5}
-nav{display:flex;gap:8px}
-.nav-link{padding:6px 14px;border-radius:6px;font-size:14px;text-decoration:none;color:#6b6a65;border:1px solid transparent;transition:all 0.1s}
-.nav-link:hover{background:#f0efe8;color:#1a1a18}
-.nav-link.active{background:#E6F1FB;color:#0C447C;border-color:#B5D4F4}
-.header-right{display:flex;align-items:center;gap:12px}
-.last-update{font-size:12px;color:#6b6a65}
+nav{display:flex;gap:2px;flex:1;flex-wrap:wrap}
+.nav-a{padding:6px 14px;border-radius:6px;font-size:14px;text-decoration:none;color:#6b6a65;font-weight:500;transition:all 0.1s;white-space:nowrap}
+.nav-a:hover{background:#f0efe8;color:#1a1a18}
+.nav-a.active{background:#E6F1FB;color:#0C447C}
+.hdr-right{display:flex;align-items:center;gap:10px}
+.upd{font-size:12px;color:#aaa}
+.ref-btn{font-size:13px;padding:5px 12px;border:1px solid #c8c7c0;border-radius:6px;background:#fff;cursor:pointer;color:#1a1a18}
+.ref-btn:hover{background:#f0efe8}
+main{padding:1.25rem 1.5rem;max-width:1400px}
 
-main{padding:1.25rem 1.5rem;max-width:1300px}
-
-/* ── KPI row ── */
-.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.5rem}
-.kpi{background:#fff;border:1px solid #e0dfd8;border-radius:10px;padding:0.9rem 1.1rem}
-.kpi-n{font-size:26px;font-weight:600;line-height:1;margin-bottom:4px}
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.5rem}
+.kpi{background:#fff;border:1px solid #e0dfd8;border-radius:10px;padding:0.85rem 1rem}
+.kpi-n{font-size:26px;font-weight:700;line-height:1;margin-bottom:3px}
 .kpi-l{font-size:11px;color:#6b6a65;text-transform:uppercase;letter-spacing:0.5px}
-.kpi-n.blue{color:#185FA5}
-.kpi-n.amber{color:#854F0B}
-.kpi-n.red{color:#A32D2D}
-.kpi-n.green{color:#27500A}
+.blue{color:#185FA5}.amber{color:#854F0B}.red{color:#A32D2D}.green{color:#27500A}.purple{color:#534AB7}
 
-/* ── Section titles ── */
-.section-title{font-size:12px;font-weight:500;color:#6b6a65;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.9rem}
+/* Section */
+.sec{font-size:12px;font-weight:600;color:#6b6a65;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.9rem}
 
-/* ── Drafter cards ── */
-.drafter-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-bottom:1.75rem}
-.dcard{background:#fff;border:1px solid #e0dfd8;border-radius:12px;padding:1.1rem 1.2rem;transition:border-color 0.15s}
+/* Filter */
+.fbar{display:flex;gap:8px;margin-bottom:1.25rem;align-items:center;flex-wrap:wrap}
+.fbar select{font-size:13px;height:32px;padding:0 9px;border:1px solid #c8c7c0;border-radius:6px;background:#fff;color:#1a1a18;outline:none}
+.fbar select:focus{border-color:#185FA5}
+.fbar label{font-size:13px;color:#6b6a65}
+
+/* Drafter cards */
+.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;margin-bottom:1.75rem}
+.dcard{background:#fff;border:1px solid #e0dfd8;border-radius:12px;overflow:hidden;transition:border-color 0.15s}
 .dcard:hover{border-color:#c0bfb8}
-.dcard-head{display:flex;align-items:center;gap:11px;margin-bottom:1rem}
-.avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;letter-spacing:0.3px}
-.dcard-name{font-size:15px;font-weight:600}
+.dcard-head{display:flex;align-items:center;gap:11px;padding:1rem 1.1rem 0.9rem;border-bottom:1px solid #f0efe8}
+.avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.dcard-name{font-size:15px;font-weight:600;line-height:1.2}
 .dcard-sub{font-size:12px;color:#6b6a65;margin-top:2px}
-.load-bar-wrap{margin-bottom:0.9rem}
-.load-label{display:flex;justify-content:space-between;font-size:12px;color:#6b6a65;margin-bottom:5px}
-.load-bar{height:7px;background:#e0dfd8;border-radius:4px;overflow:hidden}
-.load-fill{height:100%;border-radius:4px;transition:width 0.4s ease}
-.mini-jobs{border-top:1px solid #f0efe8;padding-top:0.8rem}
-.mini-job{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f5f5f2}
-.mini-job:last-child{border-bottom:none}
-.mini-left{overflow:hidden;flex:1;margin-right:8px}
-.mini-job-no{font-size:11px;color:#6b6a65;margin-bottom:1px}
-.mini-job-client{font-size:13px;color:#1a1a18;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mini-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
-.mini-due{font-size:11px;color:#6b6a65;white-space:nowrap}
-.mini-due.over{color:#A32D2D;font-weight:500}
-.mini-due.soon{color:#854F0B;font-weight:500}
-.more-jobs{font-size:12px;color:#6b6a65;padding-top:6px;text-align:center;border-top:1px solid #f0efe8;margin-top:4px}
-.no-jobs{font-size:13px;color:#aaa;padding:6px 0;text-align:center}
+.dcard-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
 
-/* ── Status badges ── */
-.badge{display:inline-block;font-size:11px;padding:1px 7px;border-radius:3px;font-weight:500;white-space:nowrap}
+/* Tabs inside card */
+.card-tabs{display:flex;border-bottom:1px solid #f0efe8;background:#fafaf8}
+.card-tab{flex:1;text-align:center;padding:6px 4px;font-size:12px;font-weight:500;color:#6b6a65;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;user-select:none}
+.card-tab:hover{color:#1a1a18}
+.card-tab.active{color:#185FA5;border-bottom-color:#185FA5;background:#fff}
+
+/* Tasks inside card */
+.task-list-inner{padding:0;max-height:260px;overflow-y:auto}
+.task-item{display:flex;align-items:flex-start;gap:9px;padding:8px 1.1rem;border-bottom:1px solid #f5f5f2;font-size:13px}
+.task-item:last-child{border-bottom:none}
+.task-cb{width:15px;height:15px;border-radius:3px;border:1.5px solid #c8c7c0;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.task-cb.done{background:#185FA5;border-color:#185FA5;color:#fff;font-size:9px;font-weight:700}
+.task-body{flex:1;min-width:0}
+.task-name-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:2px}
+.task-nm{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
+.task-nm.done-txt{text-decoration:line-through;color:#aaa;font-weight:400}
+.task-meta{font-size:11px;color:#6b6a65;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.task-due-s{font-size:11px;font-weight:500;white-space:nowrap}
+.task-due-s.over{color:#A32D2D}
+.task-due-s.soon{color:#854F0B}
+.task-due-s.ok{color:#6b6a65}
+
+/* Jobs inside card */
+.job-item{display:flex;align-items:center;gap:8px;padding:7px 1.1rem;border-bottom:1px solid #f5f5f2;font-size:13px}
+.job-item:last-child{border-bottom:none}
+.job-left{flex:1;min-width:0}
+.job-no{font-size:11px;color:#6b6a65;margin-bottom:1px}
+.job-cl{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.job-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+.jdue{font-size:11px;white-space:nowrap}
+.jdue.over{color:#A32D2D;font-weight:500}
+.jdue.soon{color:#854F0B;font-weight:500}
+.jdue.ok{color:#6b6a65}
+
+/* Load bar */
+.lbar-wrap{padding:0.65rem 1.1rem;border-bottom:1px solid #f0efe8;background:#fafaf8}
+.lbar-labels{display:flex;justify-content:space-between;font-size:11px;color:#6b6a65;margin-bottom:4px}
+.lbar{height:6px;background:#e0dfd8;border-radius:3px;overflow:hidden}
+.lbar-f{height:100%;border-radius:3px;transition:width 0.4s}
+
+.more-row{font-size:12px;color:#6b6a65;text-align:center;padding:6px;background:#fafaf8;border-top:1px solid #f0efe8;cursor:pointer}
+.more-row a{color:#185FA5;text-decoration:none}
+.no-items{font-size:13px;color:#aaa;text-align:center;padding:1rem}
+
+/* Badges */
+.badge{display:inline-block;font-size:11px;padding:1px 6px;border-radius:3px;font-weight:500;white-space:nowrap}
 .b-active{background:#E6F1FB;color:#0C447C}
 .b-review{background:#FAEEDA;color:#633806}
 .b-complete{background:#EAF3DE;color:#27500A}
 .b-onhold{background:#F1EFE8;color:#444441}
 .b-cancelled{background:#FCEBEB;color:#791F1F}
+.t-todo{background:#F1EFE8;color:#444441}
+.t-prog{background:#E6F1FB;color:#0C447C}
+.t-done{background:#EAF3DE;color:#27500A}
+.t-block{background:#FCEBEB;color:#791F1F}
+.p-urgent{background:#FCEBEB;color:#791F1F}
+.p-high{background:#FAEEDA;color:#633806}
+.p-low{background:#F1EFE8;color:#444441}
 
-/* ── Charts section ── */
-.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:1.75rem}
+/* Charts */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:1.75rem}
 .chart-card{background:#fff;border:1px solid #e0dfd8;border-radius:12px;padding:1.1rem 1.2rem}
+.chart-card .sec{margin-bottom:0.75rem}
 
-/* ── Due date timeline ── */
-.timeline-card{background:#fff;border:1px solid #e0dfd8;border-radius:12px;padding:1.1rem 1.2rem;margin-bottom:1.75rem}
-.timeline-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #f5f5f2;font-size:13px}
-.timeline-row:last-child{border-bottom:none}
+/* Timeline */
+.tl-card{background:#fff;border:1px solid #e0dfd8;border-radius:12px;padding:1.1rem 1.2rem;margin-bottom:1.75rem}
+.tl-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #f5f5f2;font-size:13px}
+.tl-row:last-child{border-bottom:none}
 .tl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .tl-info{flex:1;min-width:0}
-.tl-top{display:flex;align-items:center;gap:8px;margin-bottom:2px}
-.tl-job{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
-.tl-client{color:#6b6a65;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tl-drafter{font-size:12px;color:#6b6a65;white-space:nowrap}
+.tl-main{display:flex;align-items:center;gap:7px;margin-bottom:2px;flex-wrap:wrap}
+.tl-nm{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+.tl-who{font-size:12px;color:#6b6a65}
+.tl-lbl{font-size:11px;color:#6b6a65;background:#f5f5f2;padding:1px 6px;border-radius:3px}
 .tl-date{font-size:12px;font-weight:500;text-align:right;white-space:nowrap;flex-shrink:0}
-.tl-type{font-size:11px;color:#6b6a65;background:#f5f5f2;padding:1px 6px;border-radius:3px;white-space:nowrap}
 .tl-date.over{color:#A32D2D}
 .tl-date.soon{color:#854F0B}
 
-/* ── Empty / loading ── */
-.empty{text-align:center;padding:3rem;color:#6b6a65}
-.empty h3{font-size:16px;font-weight:500;margin-bottom:0.5rem;color:#1a1a18}
+.empty{text-align:center;padding:2.5rem;color:#6b6a65}
+.empty strong{display:block;font-size:15px;color:#1a1a18;margin-bottom:4px}
 
-/* ── Filter bar ── */
-.filter-bar{display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center}
-.filter-bar select{font-size:13px;height:32px;padding:0 8px;border:1px solid #c8c7c0;border-radius:6px;background:#fff;color:#1a1a18;outline:none}
-.filter-bar select:focus{border-color:#185FA5}
-.filter-label{font-size:13px;color:#6b6a65}
-
-@media(max-width:700px){
-  .charts-row{grid-template-columns:1fr}
-  .drafter-grid{grid-template-columns:1fr}
-  .kpi-row{grid-template-columns:repeat(2,1fr)}
-}
+@media(max-width:800px){.charts-row{grid-template-columns:1fr}.dgrid{grid-template-columns:1fr}.kpi-row{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
-
 <header>
   <div class="logo">Job<span>Track</span></div>
-  <nav style="display:flex;gap:2px">
-    <a href="index.html" style="padding:6px 14px;border-radius:6px;font-size:14px;text-decoration:none;color:#6b6a65;font-weight:500">Projects</a>
-    <a href="tasks.html" style="padding:6px 14px;border-radius:6px;font-size:14px;text-decoration:none;color:#6b6a65;font-weight:500">Tasks</a>
-    <a href="calendar.html" style="padding:6px 14px;border-radius:6px;font-size:14px;text-decoration:none;color:#6b6a65;font-weight:500">Calendar</a>
-    <a href="dashboard.html" style="padding:6px 14px;border-radius:6px;font-size:14px;text-decoration:none;background:#E6F1FB;color:#0C447C;font-weight:500">Dashboard</a>
+  <nav>
+    <a href="index.html" class="nav-a">Projects</a>
+    <a href="tasks.html" class="nav-a">Tasks</a>
+    <a href="calendar.html" class="nav-a">Calendar</a>
+    <a href="dashboard.html" class="nav-a active">Dashboard</a>
   </nav>
-  <div class="header-right">
-    <span class="last-update" id="last-update"></span>
-    <button onclick="location.reload()" style="font-size:13px;padding:5px 12px;border:1px solid #c8c7c0;border-radius:6px;background:#fff;cursor:pointer;color:#1a1a18">↻ Refresh</button>
+  <div class="hdr-right">
+    <span class="upd" id="upd"></span>
+    <button class="ref-btn" onclick="location.reload()">↻ Refresh</button>
   </div>
 </header>
 
 <main>
-
-  <!-- KPI row -->
   <div class="kpi-row" id="kpi-row"></div>
 
-  <!-- Filter bar -->
-  <div class="filter-bar">
-    <span class="filter-label">Filter:</span>
+  <div class="fbar">
+    <label>Filter by drafter:</label>
+    <select id="f-drafter" onchange="renderAll()"><option value="">All drafters</option></select>
+    <label style="margin-left:8px">Project status:</label>
     <select id="f-status" onchange="renderAll()">
-      <option value="">All statuses</option>
+      <option value="">All</option>
       <option>Active</option><option>In review</option><option>Complete</option><option>On hold</option><option>Cancelled</option>
     </select>
   </div>
 
-  <!-- Drafter workload cards -->
-  <div class="section-title">Workload per drafter</div>
-  <div class="drafter-grid" id="drafter-grid"></div>
+  <div class="sec">Workload per drafter</div>
+  <div class="dgrid" id="dgrid"></div>
 
-  <!-- Charts -->
   <div class="charts-row">
     <div class="chart-card">
-      <div class="section-title">Active and in-review jobs by drafter</div>
-      <div style="position:relative;height:220px">
-        <canvas id="bar-chart" role="img" aria-label="Horizontal bar chart showing active job count per drafter">Active jobs per drafter.</canvas>
-      </div>
+      <div class="sec">Open tasks per drafter</div>
+      <div style="position:relative" id="bar-wrap"><canvas id="bar-chart" role="img" aria-label="Horizontal bar chart of open tasks per drafter">Open tasks per drafter.</canvas></div>
     </div>
     <div class="chart-card">
-      <div class="section-title">Status breakdown</div>
-      <div style="position:relative;height:160px;width:160px;margin:0 auto 0.75rem">
-        <canvas id="pie-chart" role="img" aria-label="Doughnut chart of job status distribution">Job status distribution.</canvas>
-      </div>
+      <div class="sec">Task status breakdown</div>
+      <div style="position:relative;height:160px;width:160px;margin:0 auto 0.75rem"><canvas id="pie-chart" role="img" aria-label="Doughnut chart of task status distribution">Task status breakdown.</canvas></div>
       <div id="pie-legend" style="font-size:13px;display:flex;flex-direction:column;gap:6px"></div>
     </div>
   </div>
 
-  <!-- Upcoming due dates -->
-  <div class="timeline-card">
-    <div class="section-title">Upcoming and overdue dates (next 30 days)</div>
+  <div class="tl-card">
+    <div class="sec">Upcoming due dates — next 30 days (project milestones + tasks)</div>
     <div id="timeline"></div>
   </div>
-
-  <!-- Priority heatmap -->
-  <div class="chart-card" style="margin-bottom:1.75rem">
-    <div class="section-title">Progress by drafter</div>
-    <div id="progress-bars"></div>
-  </div>
-
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-// ── Data ──────────────────────────────────────────────────────────────────
-const DEMO_JOBS = [
-  {id:'1',jobNo:'2025-001',client:'Riverside Corp',description:'Site plan & grading',drafter:'Alex Chen',status:'Active',dueDesign:'2025-08-05',dueDraft:'2025-08-12',dueIssue:'2025-08-20',priority:'high',pct:'60',notes:''},
-  {id:'2',jobNo:'2025-002',client:'Northgate LLC',description:'Foundation drawings',drafter:'Alex Chen',status:'In review',dueDesign:'2025-07-25',dueDraft:'2025-07-30',dueIssue:'2025-08-08',priority:'urgent',pct:'90',notes:''},
-  {id:'3',jobNo:'2025-003',client:'Lakewood HOA',description:'Retaining wall design',drafter:'Jordan Smith',status:'Active',dueDesign:'2025-08-10',dueDraft:'2025-08-18',dueIssue:'2025-08-28',priority:'normal',pct:'30',notes:''},
-  {id:'4',jobNo:'2025-004',client:'Metro Transit',description:'Utility crossing plan',drafter:'Jordan Smith',status:'Active',dueDesign:'2025-07-28',dueDraft:'2025-08-03',dueIssue:'2025-08-15',priority:'high',pct:'45',notes:''},
-  {id:'5',jobNo:'2025-005',client:'Sunfield Dev',description:'Subdivision layout',drafter:'Morgan Lee',status:'Complete',dueDesign:'2025-07-10',dueDraft:'2025-07-15',dueIssue:'2025-07-22',priority:'normal',pct:'100',notes:''},
-  {id:'6',jobNo:'2025-006',client:'City of Elmwood',description:'Storm drain design',drafter:'Morgan Lee',status:'Active',dueDesign:'2025-08-01',dueDraft:'2025-08-09',dueIssue:'2025-08-20',priority:'normal',pct:'55',notes:''},
-  {id:'7',jobNo:'2025-007',client:'Pinnacle Homes',description:'Lot grading plan',drafter:'Sam Rivera',status:'On hold',dueDesign:'',dueDraft:'',dueIssue:'2025-09-01',priority:'low',pct:'20',notes:''},
-  {id:'8',jobNo:'2025-008',client:'Harborview Inc',description:'Erosion control plan',drafter:'Sam Rivera',status:'Active',dueDesign:'2025-08-14',dueDraft:'2025-08-22',dueIssue:'2025-09-05',priority:'normal',pct:'10',notes:''},
-  {id:'9',jobNo:'2025-009',client:'Greenway LLC',description:'Trail alignment',drafter:'Taylor Kim',status:'Active',dueDesign:'2025-07-30',dueDraft:'2025-08-06',dueIssue:'2025-08-18',priority:'high',pct:'70',notes:''},
-  {id:'10',jobNo:'2025-010',client:'Harmon Estates',description:'Drainage easement',drafter:'Taylor Kim',status:'In review',dueDesign:'2025-07-22',dueDraft:'2025-07-28',dueIssue:'2025-08-10',priority:'urgent',pct:'85',notes:''},
-  {id:'11',jobNo:'2025-011',client:'Vista Holdings',description:'Cut & fill analysis',drafter:'Casey Brown',status:'Active',dueDesign:'2025-08-20',dueDraft:'2025-08-28',dueIssue:'2025-09-10',priority:'normal',pct:'15',notes:''},
-];
+const SC={Active:'b-active','In review':'b-review',Complete:'b-complete','On hold':'b-onhold',Cancelled:'b-cancelled'};
+const TC={'To do':'t-todo','In progress':'t-prog',Done:'t-done',Blocked:'t-block'};
+const PC={urgent:'p-urgent',high:'p-high',low:'p-low',normal:''};
+const COLORS=['#2a78d6','#eb6834','#1baf7a','#eda100','#e87ba4','#4a3aa7','#e34948'];
+const AVCOLORS=[{bg:'#E6F1FB',fg:'#0C447C'},{bg:'#EAF3DE',fg:'#27500A'},{bg:'#FAEEDA',fg:'#633806'},{bg:'#EEEDFE',fg:'#3C3489'},{bg:'#FAECE7',fg:'#712B13'},{bg:'#F1EFE8',fg:'#444441'},{bg:'#FBEAF0',fg:'#72243E'}];
+const TASK_COLORS={'To do':'#888780','In progress':'#2a78d6',Done:'#1baf7a',Blocked:'#e34948'};
 
-let allJobs = JSON.parse(localStorage.getItem('jt_jobs') || 'null') || DEMO_JOBS;
-const COLORS = ['#2a78d6','#eb6834','#1baf7a','#eda100','#e87ba4','#4a3aa7','#e34948'];
-const AVATAR_COLORS = [
-  {bg:'#E6F1FB',fg:'#0C447C'},{bg:'#EAF3DE',fg:'#27500A'},{bg:'#FAEEDA',fg:'#633806'},
-  {bg:'#EEEDFE',fg:'#3C3489'},{bg:'#FAECE7',fg:'#712B13'},{bg:'#F1EFE8',fg:'#444441'},
-  {bg:'#FBEAF0',fg:'#72243E'}
-];
-const STATUS_COLORS = {
-  'Active':'#2a78d6','In review':'#eda100','Complete':'#1baf7a','On hold':'#888780','Cancelled':'#e34948'
-};
-const STATUS_CLASS = {
-  'Active':'b-active','In review':'b-review','Complete':'b-complete','On hold':'b-onhold','Cancelled':'b-cancelled'
-};
+let jobs=JSON.parse(localStorage.getItem('jt_jobs')||'[]');
+let drafters=JSON.parse(localStorage.getItem('jt_drafters')||'[]');
+let tasks=JSON.parse(localStorage.getItem('jt_tasks')||'[]');
+let barChart=null,pieChart=null;
+// track which tab each drafter card is on: 'tasks' or 'jobs'
+let cardTab={};
 
-// ── Helpers ───────────────────────────────────────────────────────────────
-function initials(name) { return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
-function daysDiff(d) {
-  if (!d) return null;
-  const target = new Date(d + 'T00:00:00');
-  const today = new Date(); today.setHours(0,0,0,0);
-  return Math.round((target - today) / 86400000);
-}
-function fmtDate(d) {
-  if (!d) return '—';
-  const [y, m, day] = d.split('-');
-  return `${m}/${day}/${y}`;
-}
-function nextDue(j) {
-  return [j.dueDesign, j.dueDraft, j.dueIssue].filter(Boolean).sort()[0] || null;
-}
-function dueCls(d, status) {
-  if (status === 'Complete' || status === 'Cancelled') return '';
-  const n = daysDiff(d);
-  if (n === null) return '';
-  if (n < 0) return 'over';
-  if (n <= 7) return 'soon';
-  return '';
+function initials(n){return n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();}
+function daysDiff(d){if(!d)return null;const t=new Date(d+'T00:00:00'),n=new Date();n.setHours(0,0,0,0);return Math.round((t-n)/86400000);}
+function fmtDate(d){if(!d)return'—';const[y,m,day]=d.split('-');return`${m}/${day}/${y}`;}
+function dueDayStr(d,done){
+  if(!d)return{str:'',cls:''};
+  const n=daysDiff(d);
+  if(done)return{str:fmtDate(d),cls:'ok'};
+  if(n<0)return{str:`${fmtDate(d)} (${Math.abs(n)}d over)`,cls:'over'};
+  if(n===0)return{str:`${fmtDate(d)} (today)`,cls:'soon'};
+  if(n<=7)return{str:`${fmtDate(d)} (${n}d)`,cls:'soon'};
+  return{str:fmtDate(d),cls:'ok'};
 }
 
-let barChart = null, pieChart = null;
+function populateFilters(){
+  const fd=document.getElementById('f-drafter');
+  fd.innerHTML='<option value="">All drafters</option>'+drafters.sort().map(d=>`<option>${d}</option>`).join('');
+}
 
-function renderAll() {
-  const fs = document.getElementById('f-status').value;
-  const jobs = fs ? allJobs.filter(j => j.status === fs) : allJobs;
-  const drafters = [...new Set(allJobs.map(j => j.drafter).filter(Boolean))].sort();
+function renderAll(){
+  const fd=document.getElementById('f-drafter').value;
+  const fs=document.getElementById('f-status').value;
+  const filteredJobs=jobs.filter(j=>(fd?j.drafter===fd:true)&&(fs?j.status===fs:true));
+  const allDrafters=fd?[fd]:[...new Set([...jobs.map(j=>j.drafter),...tasks.map(t=>{const j=jobs.find(x=>x.id===t.jobId);return j?j.drafter:null;})].filter(Boolean))].sort();
 
-  renderKPI(jobs);
-  renderDrafterCards(drafters, jobs);
-  renderBarChart(drafters, jobs);
-  renderPieChart(jobs);
-  renderTimeline(allJobs); // always show full timeline regardless of filter
-  renderProgressBars(drafters, allJobs);
-
-  document.getElementById('last-update').textContent = 'Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  renderKPI(filteredJobs,allDrafters);
+  renderCards(allDrafters,filteredJobs);
+  renderBarChart(allDrafters);
+  renderPieChart();
+  renderTimeline(filteredJobs);
+  document.getElementById('upd').textContent='Updated '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
 }
 
 // ── KPI ───────────────────────────────────────────────────────────────────
-function renderKPI(jobs) {
-  const drafters = [...new Set(jobs.map(j => j.drafter).filter(Boolean))];
-  const active = jobs.filter(j => j.status === 'Active').length;
-  let over = 0, soon = 0;
-  jobs.forEach(j => {
-    if (j.status === 'Complete' || j.status === 'Cancelled') return;
-    ['dueDesign','dueDraft','dueIssue'].forEach(k => {
-      const n = daysDiff(j[k]);
-      if (n === null) return;
-      if (n < 0) over++;
-      else if (n <= 7) soon++;
-    });
-  });
-  const avgPct = jobs.length ? Math.round(jobs.reduce((s,j) => s + parseInt(j.pct||0,10), 0) / jobs.length) : 0;
-  document.getElementById('kpi-row').innerHTML = `
-    <div class="kpi"><div class="kpi-n">${jobs.length}</div><div class="kpi-l">Total jobs</div></div>
-    <div class="kpi"><div class="kpi-n blue">${active}</div><div class="kpi-l">Active</div></div>
-    <div class="kpi"><div class="kpi-n amber">${soon}</div><div class="kpi-l">Due within 7 days</div></div>
-    <div class="kpi"><div class="kpi-n red">${over}</div><div class="kpi-l">Overdue dates</div></div>
-    <div class="kpi"><div class="kpi-n green">${avgPct}%</div><div class="kpi-l">Avg complete</div></div>
-    <div class="kpi"><div class="kpi-n">${drafters.length}</div><div class="kpi-l">Drafters</div></div>
+function renderKPI(filteredJobs,allDrafters){
+  const allTasks=tasks.filter(t=>{const j=jobs.find(x=>x.id===t.jobId);return j&&(document.getElementById('f-drafter').value?j.drafter===document.getElementById('f-drafter').value:true);});
+  const openTasks=allTasks.filter(t=>t.status!=='Done').length;
+  const blockedTasks=allTasks.filter(t=>t.status==='Blocked').length;
+  const overdueTasks=allTasks.filter(t=>t.status!=='Done'&&t.due&&daysDiff(t.due)<0).length;
+  const activeJobs=filteredJobs.filter(j=>j.status==='Active'||j.status==='In review').length;
+  document.getElementById('kpi-row').innerHTML=`
+    <div class="kpi"><div class="kpi-n">${filteredJobs.length}</div><div class="kpi-l">Projects</div></div>
+    <div class="kpi"><div class="kpi-n blue">${activeJobs}</div><div class="kpi-l">Active projects</div></div>
+    <div class="kpi"><div class="kpi-n purple">${allTasks.length}</div><div class="kpi-l">Total tasks</div></div>
+    <div class="kpi"><div class="kpi-n blue">${openTasks}</div><div class="kpi-l">Open tasks</div></div>
+    <div class="kpi"><div class="kpi-n red">${blockedTasks}</div><div class="kpi-l">Blocked</div></div>
+    <div class="kpi"><div class="kpi-n amber">${overdueTasks}</div><div class="kpi-l">Overdue tasks</div></div>
+    <div class="kpi"><div class="kpi-n">${allDrafters.length}</div><div class="kpi-l">Drafters</div></div>
   `;
 }
 
 // ── Drafter cards ─────────────────────────────────────────────────────────
-function renderDrafterCards(drafters, jobs) {
-  const grid = document.getElementById('drafter-grid');
-  if (!drafters.length) {
-    grid.innerHTML = '<div class="empty"><h3>No data</h3><p>Add jobs with assigned drafters to see workload cards.</p></div>';
-    return;
-  }
-  const MAX_LOAD = 6;
-  grid.innerHTML = '';
-  drafters.forEach((d, i) => {
-    const mine = jobs.filter(j => j.drafter === d);
-    const mineActive = mine.filter(j => j.status === 'Active' || j.status === 'In review');
-    const mineComplete = mine.filter(j => j.status === 'Complete').length;
-    const ac = AVATAR_COLORS[i % AVATAR_COLORS.length];
-    const loadPct = Math.min(100, Math.round((mineActive.length / MAX_LOAD) * 100));
-    const barColor = loadPct >= 100 ? '#A32D2D' : loadPct >= 70 ? '#854F0B' : '#185FA5';
-    const loadLabel = loadPct >= 100 ? 'At capacity' : loadPct >= 70 ? 'Heavy load' : 'Normal';
-
-    const sorted = mineActive.slice().sort((a, b) => {
-      const na = nextDue(a), nb = nextDue(b);
-      if (!na) return 1; if (!nb) return -1;
-      return na.localeCompare(nb);
+function renderCards(allDrafters,filteredJobs){
+  const grid=document.getElementById('dgrid');
+  if(!allDrafters.length){grid.innerHTML='<div class="empty"><strong>No drafters found</strong>Add projects with assigned drafters to see workload cards.</div>';return;}
+  grid.innerHTML='';
+  allDrafters.forEach((d,i)=>{
+    const ac=AVCOLORS[i%AVCOLORS.length];
+    const myJobs=filteredJobs.filter(j=>j.drafter===d&&j.status!=='Cancelled');
+    const activeJobs=myJobs.filter(j=>j.status==='Active'||j.status==='In review');
+    // Tasks assigned directly to this drafter, or on jobs assigned to them
+    const myTasks=tasks.filter(t=>{
+      if(t.assignee===d)return true; // directly assigned
+      const j=jobs.find(x=>x.id===t.jobId);
+      return j&&j.drafter===d&&!t.assignee; // job is theirs and no specific assignee
     });
+    const openTasks=myTasks.filter(t=>t.status!=='Done');
+    const blockedTasks=myTasks.filter(t=>t.status==='Blocked').length;
+    const overdueTasks=openTasks.filter(t=>t.due&&daysDiff(t.due)<0).length;
+    const doneTasks=myTasks.filter(t=>t.status==='Done').length;
 
-    const overdue = mineActive.filter(j => {
-      return ['dueDesign','dueDraft','dueIssue'].some(k => { const n = daysDiff(j[k]); return n !== null && n < 0; });
-    }).length;
+    // Load bar based on open tasks (max 10 = full)
+    const MAX=10;
+    const loadPct=Math.min(100,Math.round((openTasks.length/MAX)*100));
+    const barColor=loadPct>=90?'#A32D2D':loadPct>=70?'#854F0B':'#185FA5';
+    const loadLabel=loadPct>=90?'At capacity':loadPct>=70?'Heavy':'Normal';
 
-    const card = document.createElement('div');
-    card.className = 'dcard';
-    const overdueTag = overdue > 0 ? `<span class="badge b-cancelled">${overdue} overdue</span>` : '';
-    card.innerHTML = `
+    const tags=[];
+    if(overdueTasks>0)tags.push(`<span class="badge b-cancelled">${overdueTasks} overdue task${overdueTasks>1?'s':''}</span>`);
+    if(blockedTasks>0)tags.push(`<span class="badge t-block">${blockedTasks} blocked</span>`);
+
+    const curTab=cardTab[d]||'tasks';
+    const div=document.createElement('div');
+    div.className='dcard';
+    div.id='card-'+d.replace(/\s/g,'-');
+    div.innerHTML=`
       <div class="dcard-head">
         <div class="avatar" style="background:${ac.bg};color:${ac.fg}">${initials(d)}</div>
         <div style="flex:1;min-width:0">
-          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-            <div class="dcard-name">${d}</div>
-            ${overdueTag}
-          </div>
-          <div class="dcard-sub">${mineActive.length} active · ${mineComplete} complete · ${loadLabel}</div>
+          <div class="dcard-name">${d}</div>
+          <div class="dcard-sub">${openTasks.length} open task${openTasks.length!==1?'s':''} · ${activeJobs.length} active project${activeJobs.length!==1?'s':''} · ${loadLabel}</div>
+          ${tags.length?`<div class="dcard-tags">${tags.join('')}</div>`:''}
         </div>
       </div>
-      <div class="load-bar-wrap">
-        <div class="load-label">
-          <span>Capacity</span>
-          <span>${mineActive.length} / ${MAX_LOAD}</span>
-        </div>
-        <div class="load-bar">
-          <div class="load-fill" style="width:${loadPct}%;background:${barColor}"></div>
-        </div>
+      <div class="lbar-wrap">
+        <div class="lbar-labels"><span>Task load</span><span>${openTasks.length} / ${MAX}</span></div>
+        <div class="lbar"><div class="lbar-f" style="width:${loadPct}%;background:${barColor}"></div></div>
       </div>
-      <div class="mini-jobs">
-        ${sorted.length === 0
-          ? '<div class="no-jobs">No active jobs</div>'
-          : sorted.slice(0, 5).map(j => {
-              const nd = nextDue(j);
-              const dc = dueCls(nd, j.status);
-              const n = nd ? daysDiff(nd) : null;
-              const dueStr = nd
-                ? (n < 0 ? `${fmtDate(nd)} (${Math.abs(n)}d over)` : n === 0 ? `${fmtDate(nd)} (today)` : n <= 7 ? `${fmtDate(nd)} (${n}d)` : fmtDate(nd))
-                : '—';
-              return `<div class="mini-job">
-                <div class="mini-left">
-                  <div class="mini-job-no">${j.jobNo}</div>
-                  <div class="mini-job-client">${j.client}</div>
-                </div>
-                <div class="mini-right">
-                  <span class="badge ${STATUS_CLASS[j.status]||''}">${j.status}</span>
-                  <span class="mini-due ${dc}">${dueStr}</span>
-                </div>
-              </div>`;
-            }).join('')
-        }
-        ${sorted.length > 5 ? `<div class="more-jobs">+${sorted.length - 5} more job${sorted.length - 5 !== 1 ? 's' : ''}</div>` : ''}
+      <div class="card-tabs">
+        <div class="card-tab ${curTab==='tasks'?'active':''}" onclick="switchTab('${d}','tasks')">Tasks (${openTasks.length})</div>
+        <div class="card-tab ${curTab==='jobs'?'active':''}" onclick="switchTab('${d}','jobs')">Projects (${activeJobs.length})</div>
+      </div>
+      <div class="task-list-inner" id="inner-${d.replace(/\s/g,'-')}">
+        ${curTab==='tasks'?renderTasksInner(openTasks,myTasks):renderJobsInner(myJobs)}
       </div>
     `;
-    grid.appendChild(card);
+    grid.appendChild(div);
   });
 }
 
-// ── Bar chart ─────────────────────────────────────────────────────────────
-function renderBarChart(drafters, jobs) {
-  const ctx = document.getElementById('bar-chart');
-  const data = drafters.map(d => jobs.filter(j => j.drafter === d && (j.status === 'Active' || j.status === 'In review')).length);
-  const wrapH = Math.max(180, drafters.length * 44 + 60);
-  ctx.parentElement.style.height = wrapH + 'px';
+function switchTab(drafter,tab){
+  cardTab[drafter]=tab;
+  // re-render just this card's inner content + tabs
+  const key=drafter.replace(/\s/g,'-');
+  const card=document.getElementById('card-'+key);
+  if(!card)return;
+  // update tab classes
+  card.querySelectorAll('.card-tab').forEach((el,i)=>{el.className='card-tab'+(((i===0&&tab==='tasks')||(i===1&&tab==='jobs'))?' active':'');});
+  const inner=document.getElementById('inner-'+key);
+  const myTasks=tasks.filter(t=>{
+    if(t.assignee===drafter)return true;
+    const j=jobs.find(x=>x.id===t.jobId);
+    return j&&j.drafter===drafter&&!t.assignee;
+  });
+  const openTasks=myTasks.filter(t=>t.status!=='Done');
+  const fs=document.getElementById('f-status').value;
+  const myJobs=jobs.filter(j=>j.drafter===drafter&&j.status!=='Cancelled'&&(fs?j.status===fs:true));
+  inner.innerHTML=tab==='tasks'?renderTasksInner(openTasks,myTasks):renderJobsInner(myJobs);
+}
 
-  if (barChart) barChart.destroy();
-  barChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: drafters,
-      datasets: [{
-        label: 'Active / in-review jobs',
+function renderTasksInner(openTasks,allMyTasks){
+  if(!allMyTasks.length)return'<div class="no-items">No tasks yet</div>';
+  // sort: blocked first, then in-progress, then by due date, done last
+  const order={Blocked:0,'In progress':1,'To do':2,Done:3};
+  const sorted=openTasks.slice().sort((a,b)=>{
+    if(order[a.status]!==order[b.status])return order[a.status]-order[b.status];
+    if(a.due&&b.due)return a.due.localeCompare(b.due);
+    return a.due?-1:b.due?1:0;
+  });
+  const SHOW=6;
+  const shown=sorted.slice(0,SHOW);
+  const extra=sorted.length-SHOW;
+  const doneCnt=allMyTasks.filter(t=>t.status==='Done').length;
+
+  let html=shown.map(t=>{
+    const j=jobs.find(x=>x.id===t.jobId)||{};
+    const isDone=t.status==='Done';
+    const {str:dueStr,cls:dueCls}=dueDayStr(t.due,isDone);
+    return`<div class="task-item">
+      <div class="task-cb ${isDone?'done':''}'">${isDone?'✓':''}</div>
+      <div class="task-body">
+        <div class="task-name-row">
+          <span class="task-nm ${isDone?'done-txt':''}">${t.name}</span>
+          <span class="badge ${TC[t.status]||''}">${t.status}</span>
+          ${t.priority&&t.priority!=='normal'?`<span class="badge ${PC[t.priority]||''}">${t.priority}</span>`:''}
+        </div>
+        <div class="task-meta">
+          ${j.jobNo?`<strong>${j.jobNo}</strong> — `:''}${j.client||''}
+          ${dueStr?` · <span class="task-due-s ${dueCls}">${dueStr}</span>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  if(extra>0)html+=`<div class="more-row">+${extra} more open task${extra!==1?'s':''} · <a href="tasks.html">View all</a></div>`;
+  if(doneCnt>0)html+=`<div class="more-row" style="color:#6b6a65">${doneCnt} completed task${doneCnt!==1?'s':''} hidden · <a href="tasks.html">View all</a></div>`;
+  return html;
+}
+
+function renderJobsInner(myJobs){
+  if(!myJobs.length)return'<div class="no-items">No projects assigned</div>';
+  const sorted=myJobs.slice().sort((a,b)=>{
+    const order={'In review':0,Active:1,'On hold':2,Complete:3};
+    return (order[a.status]??9)-(order[b.status]??9);
+  });
+  const SHOW=6;
+  const shown=sorted.slice(0,SHOW);
+  const extra=sorted.length-SHOW;
+  let html=shown.map(j=>{
+    const nd=[j.dueDesign,j.dueDraft,j.dueIssue].filter(Boolean).sort()[0]||null;
+    const {str:dueStr,cls:dueCls}=dueDayStr(nd,j.status==='Complete');
+    const openT=tasks.filter(t=>t.jobId===j.id&&t.status!=='Done').length;
+    return`<div class="job-item">
+      <div class="job-left">
+        <div class="job-no">${j.jobNo}</div>
+        <div class="job-cl">${j.client}</div>
+        ${openT>0?`<div style="font-size:11px;color:#6b6a65;margin-top:1px">${openT} open task${openT>1?'s':''}</div>`:''}
+      </div>
+      <div class="job-right">
+        <span class="badge ${SC[j.status]||''}">${j.status}</span>
+        ${dueStr?`<span class="jdue ${dueCls}">${dueStr}</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  if(extra>0)html+=`<div class="more-row">+${extra} more · <a href="index.html">View all</a></div>`;
+  return html;
+}
+
+// ── Bar chart — open tasks per drafter ───────────────────────────────────
+function renderBarChart(allDrafters){
+  const ctx=document.getElementById('bar-chart');
+  const data=allDrafters.map(d=>{
+    return tasks.filter(t=>{
+      if(t.status==='Done')return false;
+      if(t.assignee===d)return true;
+      const j=jobs.find(x=>x.id===t.jobId);
+      return j&&j.drafter===d&&!t.assignee;
+    }).length;
+  });
+  const h=Math.max(160,allDrafters.length*44+60);
+  document.getElementById('bar-wrap').style.height=h+'px';
+  if(barChart)barChart.destroy();
+  barChart=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:allDrafters,
+      datasets:[{
+        label:'Open tasks',
         data,
-        backgroundColor: drafters.map((_, i) => COLORS[i % COLORS.length]),
-        borderRadius: 4,
-        barThickness: 28,
+        backgroundColor:allDrafters.map((_,i)=>COLORS[i%COLORS.length]),
+        borderRadius:4,barThickness:26
       }]
     },
-    options: {
-      indexAxis: 'y',
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: ctx => `${ctx.parsed.x} job${ctx.parsed.x !== 1 ? 's' : ''}` } }
-      },
-      scales: {
-        x: {
-          beginAtZero: true,
-          ticks: { stepSize: 1, color: '#6b6a65', font: { size: 11 } },
-          grid: { color: '#f0efe8' },
-          border: { display: false }
-        },
-        y: {
-          ticks: { color: '#1a1a18', font: { size: 13 } },
-          grid: { display: false },
-          border: { display: false }
-        }
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.parsed.x} open task${c.parsed.x!==1?'s':''}`}}},
+      scales:{
+        x:{beginAtZero:true,ticks:{stepSize:1,color:'#6b6a65',font:{size:11}},grid:{color:'#f0efe8'},border:{display:false}},
+        y:{ticks:{color:'#1a1a18',font:{size:13}},grid:{display:false},border:{display:false}}
       }
     }
   });
 }
 
-// ── Pie chart ─────────────────────────────────────────────────────────────
-function renderPieChart(jobs) {
-  const counts = {};
-  jobs.forEach(j => { counts[j.status] = (counts[j.status] || 0) + 1; });
-  const statuses = Object.keys(counts);
-  const ctx = document.getElementById('pie-chart');
-
-  if (pieChart) pieChart.destroy();
-  pieChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: statuses,
-      datasets: [{
-        data: statuses.map(s => counts[s]),
-        backgroundColor: statuses.map(s => STATUS_COLORS[s] || '#ccc'),
-        borderWidth: 2, borderColor: '#fff'
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false, cutout: '60%',
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed}` } }
-      }
-    }
+// ── Pie chart — task status breakdown ────────────────────────────────────
+function renderPieChart(){
+  const counts={};
+  const fd=document.getElementById('f-drafter').value;
+  const relevantTasks=tasks.filter(t=>{
+    if(!fd)return true;
+    if(t.assignee===fd)return true;
+    const j=jobs.find(x=>x.id===t.jobId);
+    return j&&j.drafter===fd&&!t.assignee;
   });
-
-  document.getElementById('pie-legend').innerHTML = statuses.map(s => `
+  relevantTasks.forEach(t=>{counts[t.status]=(counts[t.status]||0)+1;});
+  const statuses=Object.keys(counts);
+  const ctx=document.getElementById('pie-chart');
+  if(pieChart)pieChart.destroy();
+  if(!statuses.length){document.getElementById('pie-legend').innerHTML='<div style="color:#aaa;font-size:13px;text-align:center">No tasks yet</div>';return;}
+  pieChart=new Chart(ctx,{
+    type:'doughnut',
+    data:{labels:statuses,datasets:[{data:statuses.map(s=>counts[s]),backgroundColor:statuses.map(s=>TASK_COLORS[s]||'#ccc'),borderWidth:2,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.parsed}`}}}}
+  });
+  document.getElementById('pie-legend').innerHTML=statuses.map(s=>`
     <div style="display:flex;align-items:center;gap:8px">
-      <span style="width:10px;height:10px;border-radius:2px;background:${STATUS_COLORS[s]||'#ccc'};flex-shrink:0"></span>
-      <span style="font-size:13px;color:#1a1a18;flex:1">${s}</span>
-      <span style="font-size:13px;color:#6b6a65;font-weight:500">${counts[s]}</span>
+      <span style="width:10px;height:10px;border-radius:2px;background:${TASK_COLORS[s]||'#ccc'};flex-shrink:0"></span>
+      <span style="flex:1;font-size:13px;color:#1a1a18">${s}</span>
+      <span style="font-size:13px;font-weight:500;color:#6b6a65">${counts[s]}</span>
     </div>`).join('');
 }
 
-// ── Timeline ──────────────────────────────────────────────────────────────
-function renderTimeline(jobs) {
-  const DATE_TYPES = [
-    { key: 'dueDesign', label: 'Design due' },
-    { key: 'dueDraft',  label: 'Draft due' },
-    { key: 'dueIssue',  label: 'Issue date' },
-  ];
-  const active = jobs.filter(j => j.status !== 'Complete' && j.status !== 'Cancelled');
-  const entries = [];
-  active.forEach(j => {
-    DATE_TYPES.forEach(dt => {
-      if (!j[dt.key]) return;
-      const n = daysDiff(j[dt.key]);
-      if (n !== null && n <= 30) {
-        entries.push({ job: j, type: dt.label, date: j[dt.key], days: n });
-      }
+// ── Timeline — project milestones + task due dates ────────────────────────
+function renderTimeline(filteredJobs){
+  const fd=document.getElementById('f-drafter').value;
+  const entries=[];
+  const today=new Date();today.setHours(0,0,0,0);
+  const cutoff=new Date();cutoff.setDate(cutoff.getDate()+30);
+
+  // Project milestones
+  filteredJobs.filter(j=>j.status!=='Complete'&&j.status!=='Cancelled').forEach(j=>{
+    [{key:'dueDesign',label:'Design due'},{key:'dueDraft',label:'Draft due'},{key:'dueIssue',label:'Issue date'}].forEach(dt=>{
+      if(!j[dt.key])return;
+      const d=new Date(j[dt.key]+'T00:00:00');
+      if(d>cutoff)return;
+      entries.push({date:j[dt.key],label:`${j.jobNo} — ${j.client}`,type:dt.label,who:j.drafter||'Unassigned',badge:`<span class="badge ${SC[j.status]||''}">${j.status}</span>`,days:daysDiff(j[dt.key]),dot:'#185FA5'});
     });
   });
-  entries.sort((a, b) => a.date.localeCompare(b.date));
-  const tl = document.getElementById('timeline');
-  if (!entries.length) {
-    tl.innerHTML = '<div class="empty" style="padding:1.5rem"><p>No due dates in the next 30 days.</p></div>';
-    return;
-  }
-  tl.innerHTML = entries.map(e => {
-    const cls = e.days < 0 ? 'over' : e.days <= 7 ? 'soon' : '';
-    const dotColor = e.days < 0 ? '#A32D2D' : e.days <= 7 ? '#854F0B' : '#185FA5';
-    const dStr = e.days < 0
-      ? `${fmtDate(e.date)} — ${Math.abs(e.days)}d overdue`
-      : e.days === 0 ? `${fmtDate(e.date)} — today`
-      : `${fmtDate(e.date)} — ${e.days}d`;
-    return `<div class="timeline-row">
-      <div class="tl-dot" style="background:${dotColor}"></div>
+
+  // Tasks with due dates
+  tasks.filter(t=>{
+    if(t.status==='Done'||!t.due)return false;
+    const d=new Date(t.due+'T00:00:00');
+    if(d>cutoff)return false;
+    const j=jobs.find(x=>x.id===t.jobId);
+    if(!j)return false;
+    if(fd&&j.drafter!==fd&&t.assignee!==fd)return false;
+    return true;
+  }).forEach(t=>{
+    const j=jobs.find(x=>x.id===t.jobId)||{};
+    const assignee=t.assignee||(j.drafter||'Unassigned');
+    entries.push({date:t.due,label:t.name,type:'Task',who:assignee,badge:`<span class="badge ${TC[t.status]||''}">${t.status}</span>`,days:daysDiff(t.due),dot:'#eda100'});
+  });
+
+  entries.sort((a,b)=>a.date.localeCompare(b.date));
+  const tl=document.getElementById('timeline');
+  if(!entries.length){tl.innerHTML='<div class="empty"><strong>No upcoming dates</strong>No project milestones or task due dates in the next 30 days.</div>';return;}
+
+  tl.innerHTML=entries.map(e=>{
+    const over=e.days<0,soon=e.days>=0&&e.days<=7;
+    const dot=over?'#A32D2D':soon?'#854F0B':e.dot;
+    const cls=over?'over':soon?'soon':'';
+    const dStr=over?`${fmtDate(e.date)} — ${Math.abs(e.days)}d overdue`:e.days===0?`${fmtDate(e.date)} — today`:`${fmtDate(e.date)} — ${e.days}d`;
+    return`<div class="tl-row">
+      <div class="tl-dot" style="background:${dot}"></div>
       <div class="tl-info">
-        <div class="tl-top">
-          <span class="tl-job">${e.job.jobNo}</span>
-          <span class="tl-client">${e.job.client}</span>
-          <span class="tl-type">${e.type}</span>
+        <div class="tl-main">
+          <span class="tl-nm">${e.label}</span>
+          <span class="tl-lbl">${e.type}</span>
+          ${e.badge}
         </div>
-        <div class="tl-drafter">${e.job.drafter || 'Unassigned'} · <span class="badge ${STATUS_CLASS[e.job.status]||''}">${e.job.status}</span></div>
+        <div class="tl-who">${e.who}</div>
       </div>
       <div class="tl-date ${cls}">${dStr}</div>
     </div>`;
   }).join('');
 }
 
-// ── Progress bars per drafter ─────────────────────────────────────────────
-function renderProgressBars(drafters, jobs) {
-  const el = document.getElementById('progress-bars');
-  if (!drafters.length) { el.innerHTML = '<div class="empty" style="padding:1rem"><p>No data yet.</p></div>'; return; }
-  el.innerHTML = drafters.map((d, i) => {
-    const mine = jobs.filter(j => j.drafter === d && j.status !== 'Cancelled');
-    const avg = mine.length ? Math.round(mine.reduce((s, j) => s + parseInt(j.pct || 0, 10), 0) / mine.length) : 0;
-    const ac = AVATAR_COLORS[i % AVATAR_COLORS.length];
-    return `<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #f5f5f2">
-      <div class="avatar" style="background:${ac.bg};color:${ac.fg};width:32px;height:32px;font-size:11px">${initials(d)}</div>
-      <div style="flex:1;min-width:0">
-        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-          <span style="font-size:13px;font-weight:500">${d}</span>
-          <span style="font-size:12px;color:#6b6a65">${avg}% avg · ${mine.length} job${mine.length !== 1 ? 's' : ''}</span>
-        </div>
-        <div style="height:6px;background:#e0dfd8;border-radius:3px;overflow:hidden">
-          <div style="height:100%;width:${avg}%;background:${avg >= 80 ? '#1baf7a' : avg >= 50 ? '#185FA5' : '#854F0B'};border-radius:3px;transition:width 0.4s"></div>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// ── Init ──────────────────────────────────────────────────────────────────
+populateFilters();
 renderAll();
 </script>
 </body>
